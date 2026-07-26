@@ -1,0 +1,122 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-001",
+        "site_label": "Oak Grove ES",
+        "district_cluster": "West"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.3064, 38.8467] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-002",
+        "site_label": "Riverbend MS",
+        "district_cluster": "West"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.2612, 38.8776] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-003",
+        "site_label": "Westfield HS",
+        "district_cluster": "West"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.1715, 38.8537] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-004",
+        "site_label": "Timber Lane Annex",
+        "district_cluster": "North"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.3595, 38.9346] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-005",
+        "site_label": "South County STEM",
+        "district_cluster": "South"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.2189, 38.7234] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-006",
+        "site_label": "Cherry Run ES",
+        "district_cluster": "East"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.1382, 38.7921] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-007",
+        "site_label": "Poe MS",
+        "district_cluster": "East"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.1628, 38.8319] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-008",
+        "site_label": "Hayfield SS",
+        "district_cluster": "South"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.1844, 38.7588] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-009",
+        "site_label": "Marshall HS",
+        "district_cluster": "North"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.3256, 38.9144] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-010",
+        "site_label": "Langley HS",
+        "district_cluster": "North"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.2469, 38.9492] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-011",
+        "site_label": "Woodson HS",
+        "district_cluster": "East"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.2698, 38.8115] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-012",
+        "site_label": "Mock — CSV missing (gray dot)",
+        "district_cluster": "Demo"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.4078, 38.8836] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "school_id": "FCPS-099",
+        "site_label": "Reserved mock row",
+        "district_cluster": "Demo"
+      },
+      "geometry": { "type": "Point", "coordinates": [-77.0456, 38.8974] }
+    }
+  ]
+}

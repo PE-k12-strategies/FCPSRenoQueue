@@ -1,0 +1,92 @@
+:root {
+  color-scheme: light;
+
+  --font: 'Plus Jakarta Sans', system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  /* Soft dashboard shell (reference: off-white canvas) */
+  --shell-bg: #f4f4f4;
+  --shell-tint-1: rgba(255, 107, 74, 0.04);
+  --shell-tint-2: rgba(0, 0, 0, 0.02);
+
+  --sidebar-bg: #ffffff;
+  --sidebar-border: rgba(0, 0, 0, 0.06);
+  --sidebar-text: #3d3d3d;
+  --sidebar-heading: #1a1a1a;
+  --sidebar-muted: #7a7a7a;
+
+  /* Coral accent (~#FF6B4A) */
+  --accent: #ff6b4a;
+  --accent-hover: #e85a3d;
+  --accent-soft: rgba(255, 107, 74, 0.12);
+  --accent-softer: rgba(255, 107, 74, 0.08);
+  --accent-muted: rgba(255, 107, 74, 0.18);
+  --accent-ring: rgba(255, 107, 74, 0.32);
+
+  --radius-sm: 12px;
+  --radius-md: 22px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --shadow-sidebar: 4px 0 28px rgba(0, 0, 0, 0.04);
+  --shadow-float: 0 8px 28px rgba(0, 0, 0, 0.07);
+  --shadow-lift: 0 12px 32px rgba(0, 0, 0, 0.08);
+
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--sidebar-text);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background-color: var(--shell-bg);
+  background-image:
+    radial-gradient(ellipse 120% 90% at 0% 0%, var(--shell-tint-1), transparent 52%),
+    radial-gradient(ellipse 90% 70% at 100% 100%, var(--shell-tint-2), transparent 48%);
+  background-attachment: fixed;
+}
+
+#root {
+  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+h1 {
+  font-family: var(--font);
+}
+
+.app-error-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  padding: 0.65rem 1rem;
+  background: rgba(255, 255, 255, 0.92);
+  color: #b91c1c;
+  border-bottom: 1px solid rgba(255, 107, 74, 0.22);
+  font-size: 0.8125rem;
+  backdrop-filter: blur(10px);
+}
+
+.app-error-banner strong {
+  font-weight: 600;
+  color: #991b1b;
+}

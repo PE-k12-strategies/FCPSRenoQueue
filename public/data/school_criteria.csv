@@ -1,0 +1,13 @@
+school_id,criteria_notes,capacity_flag,accessibility_flag
+FCPS-001,"Portable classrooms; cafeteria undersized for peak lunch.",Moderate,Open plan exits OK
+FCPS-002,"Envelope leaks at curtain wall; boilers past typical replacement cycle.",Elevated,Two ramps non-compliant
+FCPS-003,"Roof wet insulation suspected; auditorium HVAC noisy.",High,Auditorium lift deferred
+FCPS-004,"Low daily occupancy; shared site with community center.",Low,Fully accessible routes
+FCPS-005,"Strong facility condition; growth in STEM labs drives queue.",Moderate,New wing meets ADA
+FCPS-006,"Site circulation pinch at kiss-and-ride; gym HVAC end of life.",Moderate,Front entrance ramp slope issue
+FCPS-007,"Kitchen grease interceptor upgrade planned; classrooms adequate.",Low,Elevator modernization queued
+FCPS-008,"Large secondary; crowded corridors between bells.",High,Wayfinding signage gaps
+FCPS-009,"Athletics fields drainage issues; classroom wings renovated 2012.",Moderate,Team rooms below grade — lift path
+FCPS-010,"Generally strong; selective roof replacements only.",Low,Bleachers handrail upgrade
+FCPS-011,"Science lab casework aging; parking undersized for events.",Moderate,Science wing exits tight
+FCPS-099,"Placeholder narrative for reserved mock site.",Low,N/A

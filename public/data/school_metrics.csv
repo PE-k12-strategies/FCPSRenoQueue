@@ -1,0 +1,13 @@
+school_id,school_name,queue_tier,enrollment_band,condition_score,renovation_wave
+FCPS-001,Oak Grove Elementary,Fair,650–750,62,Wave C
+FCPS-002,Riverbend Middle School,Medium,900–1050,54,Wave B
+FCPS-003,Westfield High School,High,1750–1900,48,Wave A
+FCPS-004,Timber Lane Annex,Low,120–180,71,Wave D
+FCPS-005,South County STEM Center,Fair,820–900,66,Wave C
+FCPS-006,Cherry Run Elementary,Medium,540–620,58,Wave B
+FCPS-007,Poe Middle School,Fair,780–860,60,Wave C
+FCPS-008,Hayfield Secondary,High,2100–2250,51,Wave A
+FCPS-009,Marshall High School,Medium,1650–1780,56,Wave B
+FCPS-010,Langley High School,Low,1580–1680,68,Wave D
+FCPS-011,Woodson High School,Fair,1720–1820,59,Wave B
+FCPS-099,Reserved mock row (CSV only tie-in),Low,0–50,80,Wave E
