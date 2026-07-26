@@ -8,8 +8,8 @@ export type QueueTier = 'High' | 'Medium' | 'Fair' | 'Low'
 export const queueTierColors: Record<QueueTier, string> = {
   High: '#e11d48',
   Medium: '#f97316',
-  Fair: '#8b5cf6',
-  Low: '#0ea5e9',
+  Fair: '#eab308',
+  Low: '#22c55e',
 }
 
 export const queueLegendItems: { tier: QueueTier; label: string }[] = [
