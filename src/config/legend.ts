@@ -15,8 +15,8 @@ export const queueTierColors: Record<QueueTier, string> = {
 export const queueLegendItems: { tier: QueueTier; label: string }[] = [
   { tier: 'High', label: 'High priority' },
   { tier: 'Medium', label: 'Medium priority' },
-  { tier: 'Fair', label: 'Fair' },
-  { tier: 'Low', label: 'Low priority' },
+  { tier: 'Fair', label: 'Low priority' },
+  { tier: 'Low', label: 'Lowest priority' },
 ]
 
 /** Mapbox expression for circle fill color from `queue_tier`. */
