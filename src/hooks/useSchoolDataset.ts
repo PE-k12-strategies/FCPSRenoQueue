@@ -23,7 +23,7 @@ function parseGeoJson(raw: string): SchoolFeatureCollection {
   return data as SchoolFeatureCollection
 }
 
-/** Loads GeoJSON + all configured CSVs, merges rows by `school_id`, returns enriched GeoJSON for the map. */
+/** Loads GeoJSON + all configured CSVs, merges rows by id, returns enriched GeoJSON for the map. */
 export function useSchoolDataset(): LoadState {
   const [state, setState] = useState<LoadState>({ status: 'idle' })
 

@@ -3,7 +3,7 @@ import type { FeatureCollection, Point } from 'geojson'
 /** One CSV row: header keys → cell values (all strings after parsing). */
 export type CsvRow = Record<string, string>
 
-/** GeoJSON points only — swap `sites.geojson` without changing app code. */
+/** GeoJSON points only — swap the configured GeoJSON file without changing app code. */
 export type SchoolFeatureCollection = FeatureCollection<Point>
 
 export type JoinedDataset = {

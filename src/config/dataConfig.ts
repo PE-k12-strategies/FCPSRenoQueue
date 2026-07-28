@@ -4,11 +4,11 @@
  */
 export const dataConfig = {
   /** Property on each GeoJSON feature used to match CSV rows (1:1). */
-  geoJsonIdField: 'school_id' as const,
+  geoJsonIdField: 'FCPS_School ID' as const,
   /** Column name that appears in every CSV file. */
-  csvIdField: 'school_id' as const,
+  csvIdField: 'FCPS_School ID' as const,
 
-  geojsonUrl: '/data/sites.geojson',
+  geojsonUrl: '/data/FCPS_Sites.geojson',
 
   /** Load any number of CSVs; they are merged per id (later files overwrite duplicate column names). */
   csvSources: [
