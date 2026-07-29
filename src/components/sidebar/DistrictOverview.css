@@ -1,0 +1,77 @@
+.district-overview {
+  margin-top: 1.35rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.14);
+}
+
+.district-overview-stat {
+  margin: 0.65rem 0 0.9rem;
+}
+
+.district-overview-stat-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.4rem 0.1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  font-size: 0.8125rem;
+}
+
+.district-overview-stat-row dt {
+  margin: 0;
+  font-weight: 600;
+  color: var(--sidebar-heading);
+}
+
+.district-overview-stat-row dd {
+  margin: 0;
+  font-weight: 700;
+  color: var(--sidebar-heading);
+  font-variant-numeric: tabular-nums;
+}
+
+.district-overview-subtitle {
+  margin: 0 0 0.2rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--sidebar-heading);
+}
+
+.district-overview-note {
+  margin: 0 0 0.45rem;
+  font-size: 0.72rem;
+  color: var(--sidebar-muted);
+}
+
+.district-overview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.district-overview-table th,
+.district-overview-table td {
+  padding: 0.35rem 0.1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.district-overview-table thead th {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sidebar-muted);
+}
+
+.district-overview-table thead th:not(:first-child),
+.district-overview-table tbody td {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.district-overview-table tbody th {
+  font-weight: 600;
+  color: var(--sidebar-heading);
+}

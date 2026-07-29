@@ -22,7 +22,11 @@ function App() {
   return (
     <DashboardLayout
       sidebar={
-        <Sidebar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+        <Sidebar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          schoolData={geojson}
+        />
       }
       map={
         <>

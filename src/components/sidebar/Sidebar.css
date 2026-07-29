@@ -33,9 +33,9 @@
 }
 
 .sidebar-section-copy {
-  margin: 0;
-  font-size: 0.8125rem;
-  line-height: 1.6;
+  margin: 0 0 0.15rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
   color: var(--sidebar-muted);
 }
 
