@@ -3,6 +3,7 @@ import Map, {
   Layer,
   NavigationControl,
   Source,
+  type MapLayerMouseEvent,
   type MapRef,
 } from 'react-map-gl/mapbox'
 import 'mapbox-gl/dist/mapbox-gl.css'
@@ -11,10 +12,12 @@ import { boundsFromPoints } from '../../lib/geoBounds'
 import { filterGeoJsonBySearch } from '../../lib/filterGeoJsonBySearch'
 import type { SchoolFeatureCollection } from '../../types/data'
 import { MapLegend, type BasemapMode } from './MapLegend'
+import { SchoolPopup, type SelectedSchool } from './SchoolPopup'
 import './SchoolMap.css'
 
 const MAP_STYLE_LIGHT = 'mapbox://styles/mapbox/light-v11'
 const MAP_STYLE_SATELLITE = 'mapbox://styles/mapbox/satellite-streets-v12'
+const SCHOOL_LAYER_ID = 'school-sites-circle'
 
 /** Same stack as `:root --font` in `index.html` / `index.css` (Mapbox glyph override). */
 const MAP_LABEL_FONT_FAMILY =
@@ -24,13 +27,27 @@ type Props = {
   /** Enriched GeoJSON (already merged with CSV columns). */
   data: SchoolFeatureCollection | null
   searchQuery: string
+  selectedSchool: SelectedSchool | null
+  onSelectSchool: (school: SelectedSchool | null) => void
 }
 
-export function SchoolMap({ data, searchQuery }: Props) {
+function schoolIdFromProps(props: Record<string, unknown> | null | undefined) {
+  if (!props) return ''
+  const id = props['FCPS_School ID']
+  return id == null ? '' : String(id)
+}
+
+export function SchoolMap({
+  data,
+  searchQuery,
+  selectedSchool,
+  onSelectSchool,
+}: Props) {
   const token = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined
   const mapRef = useRef<MapRef>(null)
   const mapStageRef = useRef<HTMLDivElement>(null)
   const [basemap, setBasemap] = useState<BasemapMode>('light')
+  const [cursor, setCursor] = useState<'default' | 'pointer'>('default')
   const mapStyle =
     basemap === 'satellite' ? MAP_STYLE_SATELLITE : MAP_STYLE_LIGHT
 
@@ -38,6 +55,8 @@ export function SchoolMap({ data, searchQuery }: Props) {
     () => (data ? filterGeoJsonBySearch(data, searchQuery) : null),
     [data, searchQuery],
   )
+
+  const selectedId = selectedSchool?.id ?? ''
 
   const initialViewState = useMemo(() => {
     if (!displayData) {
@@ -65,17 +84,9 @@ export function SchoolMap({ data, searchQuery }: Props) {
     const { width, height } = el.getBoundingClientRect()
     if (width < 16 || height < 16) return
     map.resize()
-    /* Nudge an immediate paint after buffer resize (reduces one-frame gaps). */
     map.triggerRepaint()
   }, [])
 
-  /**
-   * Mapbox only matches the WebGL canvas to the container when `resize()` runs.
-   * During split/window drags the container size changes every frame; we coalesce
-   * ResizeObserver bursts to at most one `resize()` per animation frame so the map
-   * tracks the panel live without grey gutters, without calling `resize()` hundreds
-   * of times per second.
-   */
   useEffect(() => {
     if (!token?.trim() || !displayData) return
     const el = mapStageRef.current
@@ -108,6 +119,28 @@ export function SchoolMap({ data, searchQuery }: Props) {
       window.visualViewport?.removeEventListener('resize', onVvResize)
     }
   }, [displayData, token, resizeMap])
+
+  const onMouseMove = useCallback((e: MapLayerMouseEvent) => {
+    setCursor(e.features && e.features.length > 0 ? 'pointer' : 'default')
+  }, [])
+
+  const onClick = useCallback(
+    (e: MapLayerMouseEvent) => {
+      const feature = e.features?.[0]
+      if (!feature?.properties) {
+        onSelectSchool(null)
+        return
+      }
+      const props = feature.properties as Record<string, unknown>
+      const id = schoolIdFromProps(props)
+      if (!id) {
+        onSelectSchool(null)
+        return
+      }
+      onSelectSchool({ id, properties: props })
+    },
+    [onSelectSchool],
+  )
 
   if (!token || !token.trim()) {
     return (
@@ -142,11 +175,13 @@ export function SchoolMap({ data, searchQuery }: Props) {
           reuseMaps
           attributionControl
           localFontFamily={MAP_LABEL_FONT_FAMILY}
-          /* Avoid double `resize()` vs our ResizeObserver (window + observer = 2× repaint flash). */
           trackResize={false}
-          /* Keeps last frame during buffer swaps; slight GPU cost, reduces white clears. */
           preserveDrawingBuffer
           fadeDuration={0}
+          cursor={cursor}
+          interactiveLayerIds={[SCHOOL_LAYER_ID]}
+          onMouseMove={onMouseMove}
+          onClick={onClick}
           onLoad={() => {
             queueMicrotask(resizeMap)
           }}
@@ -154,12 +189,22 @@ export function SchoolMap({ data, searchQuery }: Props) {
           <NavigationControl position="top-right" showCompass={false} />
           <Source id="school-sites" type="geojson" data={displayData}>
             <Layer
-              id="school-sites-circle"
+              id={SCHOOL_LAYER_ID}
               type="circle"
               paint={{
-                'circle-radius': 9,
+                'circle-radius': [
+                  'case',
+                  ['==', ['to-string', ['get', 'FCPS_School ID']], selectedId],
+                  12,
+                  9,
+                ],
                 'circle-color': circleColorExpression,
-                'circle-stroke-width': 2,
+                'circle-stroke-width': [
+                  'case',
+                  ['==', ['to-string', ['get', 'FCPS_School ID']], selectedId],
+                  3,
+                  2,
+                ],
                 'circle-stroke-color': '#ffffff',
                 'circle-opacity': 0.92,
               }}
@@ -168,6 +213,12 @@ export function SchoolMap({ data, searchQuery }: Props) {
         </Map>
       </div>
       <MapLegend basemap={basemap} onBasemapChange={setBasemap} />
+      {selectedSchool ? (
+        <SchoolPopup
+          school={selectedSchool}
+          onClose={() => onSelectSchool(null)}
+        />
+      ) : null}
     </div>
   )
 }

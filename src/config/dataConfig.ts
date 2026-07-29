@@ -12,7 +12,6 @@ export const dataConfig = {
 
   /** Load any number of CSVs; they are merged per id (later files overwrite duplicate column names). */
   csvSources: [
-    { url: '/data/school_metrics.csv', key: 'metrics' },
-    { url: '/data/school_criteria.csv', key: 'criteria' },
+    { url: '/data/FCPS_FS_Data.csv', key: 'fsData' },
   ] as const,
 } as const
