@@ -1,12 +1,26 @@
 import { useCallback, useId, useState } from 'react'
+import { facilitySuitabilityColors } from '../../config/legend'
 import {
   schoolDisplayFields,
   schoolMetricSections,
 } from '../../config/schoolMetrics'
+import {
+  parseFsScore,
+  scoreToFacilitySuitability,
+  type FacilitySuitabilityRating,
+} from '../../lib/facilitySuitability'
 import { useDialogFocus } from '../../hooks/useDialogFocus'
 import { AccordionSection } from '../sidebar/AccordionSection'
 import type { SidebarSection } from '../../config/sidebarSections'
 import './SchoolPopup.css'
+
+function ratingColor(rating: string | undefined): string | undefined {
+  if (!rating) return undefined
+  if (rating in facilitySuitabilityColors) {
+    return facilitySuitabilityColors[rating as FacilitySuitabilityRating]
+  }
+  return undefined
+}
 
 export type SelectedSchool = {
   id: string
@@ -33,23 +47,34 @@ function buildMetricSection(
   section: (typeof schoolMetricSections)[number],
   props: Record<string, unknown>,
 ): SidebarSection {
-  const rows: string[] = []
+  const rows: SidebarSection['subItems'] = []
+
+  if (section.scoredCategoryKeys) {
+    for (const { key, label } of section.scoredCategoryKeys) {
+      const score = parseFsScore(props[key])
+      if (score == null) continue
+      const category = scoreToFacilitySuitability(score)
+      rows.push({
+        label,
+        value: category,
+        color: ratingColor(category),
+      })
+    }
+  }
+
   if (section.propertyKeys) {
     for (const key of section.propertyKeys) {
       const value = propString(props, key)
       if (value != null) {
-        const label =
-          key === 'facility_suitability'
-            ? 'Rating'
-            : key === 'FS_Score'
-              ? 'FS Score'
-              : key
-        rows.push(`${label}: ${value}`)
+        rows.push({ label: `${key}: ${value}` })
       }
     }
   }
+
   if (rows.length === 0 && section.fallbackItems) {
-    rows.push(...section.fallbackItems)
+    for (const item of section.fallbackItems) {
+      rows.push({ label: item })
+    }
   }
 
   const statusTag =
@@ -61,6 +86,7 @@ function buildMetricSection(
     id: section.id,
     title: section.title,
     statusTag,
+    statusTagColor: ratingColor(statusTag),
     body: section.body,
     subItems: rows,
   }

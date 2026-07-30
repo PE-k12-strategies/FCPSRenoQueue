@@ -144,8 +144,9 @@
 
 .school-popup .accordion-status {
   margin-left: 0.3rem;
-  padding: 0.05rem 0.28rem;
+  padding: 0.12rem 0.35rem;
   font-size: 0.6rem;
+  border: none;
 }
 
 .school-popup .accordion-chevron {

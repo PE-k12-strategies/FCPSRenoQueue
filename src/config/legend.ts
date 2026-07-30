@@ -21,11 +21,11 @@ export const facilitySuitabilityLegendItems: {
   rating: FacilitySuitabilityRating
   label: string
 }[] = [
-  { rating: 'Excellent', label: 'Excellent (>0.9)' },
-  { rating: 'Good', label: 'Good (>0.75)' },
-  { rating: 'Fair', label: 'Fair (>0.6)' },
-  { rating: 'Poor', label: 'Poor (>0.4)' },
-  { rating: 'Deficient', label: 'Deficient (<0.4)' },
+  { rating: 'Excellent', label: 'Excellent' },
+  { rating: 'Good', label: 'Good' },
+  { rating: 'Fair', label: 'Fair' },
+  { rating: 'Poor', label: 'Poor' },
+  { rating: 'Deficient', label: 'Deficient' },
 ]
 
 /** Mapbox expression for circle fill color from Facility Suitability. */

@@ -7,23 +7,28 @@ export type SchoolMetricSection = {
   body: string
   /** Property keys to surface as rows when present on the school feature. */
   propertyKeys?: string[]
+  /**
+   * Numeric score fields shown as Facility Suitability categories
+   * (same breakpoints as FS_Score), not raw values.
+   */
+  scoredCategoryKeys?: { key: string; label: string }[]
   /** Static fallback rows when no property keys / values are available. */
   fallbackItems?: string[]
 }
+
+/** FS submetrics: Column I (DF), Column S (SS), Column L (PA). */
+export const facilitySuitabilitySubScores = [
+  { key: 'DF_Score', label: 'Design Features' },
+  { key: 'SS_Score', label: 'Space Sufficiency' },
+  { key: 'PA_Score', label: 'Program Adjacency' },
+] as const
 
 export const schoolMetricSections: SchoolMetricSection[] = [
   {
     id: 'facility-suitability',
     title: 'Facility Suitability',
-    body: 'Rating derived from FS_Score (Column T) using the project rubric.',
-    propertyKeys: ['facility_suitability', 'FS_Score'],
-    fallbackItems: [
-      'Excellent — score > 0.9',
-      'Good — score > 0.75',
-      'Fair — score > 0.6',
-      'Poor — score > 0.4',
-      'Deficient — score < 0.4',
-    ],
+    body: 'Submetrics categorized with the same rubric as overall Facility Suitability.',
+    scoredCategoryKeys: [...facilitySuitabilitySubScores],
   },
   {
     id: 'data-1',
@@ -61,7 +66,7 @@ export const schoolDisplayFields = [
   { key: 'School Type', label: 'School Type' },
   { key: 'Year Opened', label: 'Year Opened' },
   { key: 'Building SF', label: 'Building SF' },
-  { key: 'NCES Street Address', label: 'NCES Street Address' },
+  { key: 'NCES Street Address', label: 'Address' },
   { key: 'NCES City', label: 'City' },
   { key: 'Region', label: 'Region' },
 ] as const

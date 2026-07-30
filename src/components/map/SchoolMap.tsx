@@ -8,7 +8,11 @@ import Map, {
   type MapRef,
 } from 'react-map-gl/mapbox'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { circleColorExpression } from '../../config/legend'
+import {
+  defaultMapMetricId,
+  getMapMetric,
+  type MapMetricId,
+} from '../../config/mapMetrics'
 import { boundsFromPoints } from '../../lib/geoBounds'
 import { filterGeoJsonBySearch } from '../../lib/filterGeoJsonBySearch'
 import { filterGeoJsonBySuitability } from '../../lib/filterGeoJsonBySuitability'
@@ -17,8 +21,9 @@ import {
   type FacilitySuitabilityRating,
 } from '../../lib/facilitySuitability'
 import type { SchoolFeatureCollection } from '../../types/data'
-import { MapLegend, type BasemapMode } from './MapLegend'
+import { MapLegend, type BasemapMode, type ViewMode } from './MapLegend'
 import { SchoolPopup, type SelectedSchool } from './SchoolPopup'
+import { SchoolView } from './SchoolView'
 import './SchoolMap.css'
 
 const MAP_STYLE_LIGHT = 'mapbox://styles/mapbox/light-v11'
@@ -54,10 +59,13 @@ export function SchoolMap({
   const token = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined
   const mapRef = useRef<MapRef>(null)
   const mapStageRef = useRef<HTMLDivElement>(null)
+  const [viewMode, setViewMode] = useState<ViewMode>('map')
   const [basemap, setBasemap] = useState<BasemapMode>('light')
+  const [mapMetric, setMapMetric] = useState<MapMetricId>(defaultMapMetricId)
   const [cursor, setCursor] = useState<'default' | 'pointer'>('default')
   const mapStyle =
     basemap === 'satellite' ? MAP_STYLE_SATELLITE : MAP_STYLE_LIGHT
+  const activeMetric = getMapMetric(mapMetric)
 
   const displayData = useMemo(
     () => (data ? filterGeoJsonBySearch(data, searchQuery) : null),
@@ -257,7 +265,7 @@ export function SchoolMap({
                   7,
                   5,
                 ],
-                'circle-color': circleColorExpression,
+                'circle-color': activeMetric.colorExpression,
                 'circle-stroke-width': [
                   'case',
                   ['==', ['to-string', ['get', 'FCPS_School ID']], selectedId],
@@ -272,8 +280,18 @@ export function SchoolMap({
           </Source>
         </Map>
       </div>
-      <MapLegend basemap={basemap} onBasemapChange={setBasemap} />
-      {selectedSchool ? (
+      {viewMode === 'school' ? <SchoolView /> : null}
+
+      <MapLegend
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        basemap={basemap}
+        onBasemapChange={setBasemap}
+        mapMetric={mapMetric}
+        onMapMetricChange={setMapMetric}
+      />
+
+      {viewMode === 'map' && selectedSchool ? (
         <SchoolPopup
           school={selectedSchool}
           onClose={() => onSelectSchool(null)}
