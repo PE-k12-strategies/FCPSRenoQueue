@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   filterSchoolNameSuggestions,
   listSchoolNames,
@@ -11,15 +11,18 @@ import './SchoolBrowseList.css'
 type Props = {
   schoolData: SchoolFeatureCollection | null
   searchQuery: string
-  onSelectSchool: (school: SelectedSchool) => void
+  selectedSchoolId: string | null
+  onSelectSchool: (school: SelectedSchool | null) => void
 }
 
 export function SchoolBrowseList({
   schoolData,
   searchQuery,
+  selectedSchoolId,
   onSelectSchool,
 }: Props) {
   const [open, setOpen] = useState(false)
+  const selectedRef = useRef<HTMLButtonElement | null>(null)
   const schools = useMemo(() => listSchoolNames(schoolData), [schoolData])
 
   const visible = useMemo(() => {
@@ -34,6 +37,11 @@ export function SchoolBrowseList({
     }
     return matches.length > 0 ? matches : schools
   }, [schools, searchQuery])
+
+  useEffect(() => {
+    if (!selectedSchoolId || !open) return
+    selectedRef.current?.scrollIntoView({ block: 'nearest' })
+  }, [selectedSchoolId, open, visible])
 
   const pick = (suggestion: SchoolNameSuggestion) => {
     onSelectSchool({
@@ -57,26 +65,35 @@ export function SchoolBrowseList({
         </span>
       </summary>
       <p className="school-browse-help" id="school-browse-help">
-        Keyboard alternative to selecting a school on the map.
+        Select a school here, from search, or on the map.
       </p>
       <ul
         className="school-browse-list"
         aria-describedby="school-browse-help"
       >
-        {visible.map((school) => (
-          <li key={school.id}>
-            <button
-              type="button"
-              className="school-browse-item"
-              onClick={() => pick(school)}
-            >
-              <span className="school-browse-name">{school.name}</span>
-              {school.schoolType ? (
-                <span className="school-browse-meta">{school.schoolType}</span>
-              ) : null}
-            </button>
-          </li>
-        ))}
+        {visible.map((school) => {
+          const isSelected = school.id === selectedSchoolId
+          return (
+            <li key={school.id}>
+              <button
+                type="button"
+                ref={isSelected ? selectedRef : undefined}
+                className={
+                  isSelected
+                    ? 'school-browse-item is-selected'
+                    : 'school-browse-item'
+                }
+                aria-current={isSelected ? 'true' : undefined}
+                onClick={() => pick(school)}
+              >
+                <span className="school-browse-name">{school.name}</span>
+                {school.schoolType ? (
+                  <span className="school-browse-meta">{school.schoolType}</span>
+                ) : null}
+              </button>
+            </li>
+          )
+        })}
       </ul>
     </details>
   )

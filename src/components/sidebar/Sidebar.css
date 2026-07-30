@@ -144,6 +144,37 @@
   transition: border-color 0.15s ease;
 }
 
+.sidebar-search.has-clear {
+  padding-right: 3.25rem;
+}
+
+.sidebar-search-clear {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  min-height: 1.6rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 2px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--sidebar-heading);
+  cursor: pointer;
+}
+
+.sidebar-search-clear:hover {
+  border-color: rgba(0, 0, 0, 0.35);
+}
+
+.sidebar-search-clear:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
 .sidebar-search::placeholder {
   color: #6b6b6b;
   font-weight: 400;

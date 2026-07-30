@@ -1,12 +1,15 @@
 .school-popup {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: auto;
+  bottom: 38px;
+  /* Sit in the map area (right of the left pane), clear of top-right legend. */
+  left: calc(var(--main-content-inset, 33%) + var(--inset-gap));
+  right: auto;
   z-index: 5;
   display: flex;
   flex-direction: column;
   width: min(19.5rem, calc(100% - 28px));
-  max-height: calc(100% - 28px);
+  max-height: calc(100% - 56px);
   overflow: hidden;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.1);

@@ -1,0 +1,121 @@
+.fs-table-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-width: 0;
+  container-type: inline-size;
+  container-name: fs-panel;
+}
+
+.fs-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.fs-table-title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--sidebar-heading);
+}
+
+.fs-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  align-items: start;
+}
+
+/* Collapse based on the data-view width (right of sidebar), not the full viewport. */
+@container fs-panel (max-width: 720px) {
+  .fs-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container fs-panel (max-width: 420px) {
+  .fs-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fs-card {
+  min-width: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.fs-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.45rem 0.55rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.025);
+}
+
+.fs-card-title {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--sidebar-heading);
+  line-height: 1.25;
+}
+
+.fs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.7rem;
+}
+
+.fs-table-row th,
+.fs-table-row td {
+  padding: 0.32rem 0.55rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  vertical-align: middle;
+  text-align: left;
+  font-weight: 600;
+  color: var(--sidebar-heading);
+}
+
+.fs-table-row td {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.fs-table-row:last-child th,
+.fs-table-row:last-child td {
+  border-bottom: none;
+}
+
+.fs-table-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 4.4rem;
+  padding: 0.12rem 0.3rem;
+  border-radius: 2px;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.fs-table-na {
+  color: var(--sidebar-muted);
+  font-weight: 600;
+}
+

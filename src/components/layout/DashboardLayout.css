@@ -4,6 +4,8 @@
   min-height: 0;
   overflow: hidden;
   background: #000;
+  /* Width of the left sidebar panel; School View content pads to this. */
+  --main-content-inset: 33%;
 }
 
 /* Full-bleed map under the floating sidebar */

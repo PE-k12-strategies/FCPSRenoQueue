@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import {
   Group,
   Panel,
@@ -12,19 +13,47 @@ type Props = {
 }
 
 export function DashboardLayout({ sidebar, map }: Props) {
+  const shellRef = useRef<HTMLDivElement>(null)
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
     id: 'school-dashboard-split',
     storage: localStorage,
     panelIds: ['sidebar', 'map'],
   })
 
+  useEffect(() => {
+    const shell = shellRef.current
+    if (!shell) return
+    const panel = shell.querySelector<HTMLElement>('.dashboard-sidebar-panel')
+    if (!panel) return
+
+    const updateInset = () => {
+      const shellLeft = shell.getBoundingClientRect().left
+      const panelRight = panel.getBoundingClientRect().right
+      const inset = Math.max(0, Math.round(panelRight - shellLeft))
+      shell.style.setProperty('--main-content-inset', `${inset}px`)
+    }
+
+    updateInset()
+    const ro = new ResizeObserver(updateInset)
+    ro.observe(panel)
+    ro.observe(shell)
+    window.addEventListener('resize', updateInset)
+    window.visualViewport?.addEventListener('resize', updateInset)
+
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', updateInset)
+      window.visualViewport?.removeEventListener('resize', updateInset)
+    }
+  }, [])
+
   return (
-    <div className="dashboard-shell">
+    <div className="dashboard-shell" ref={shellRef}>
       <main
         id="main-content"
         className="dashboard-map-bleed"
         tabIndex={-1}
-        aria-label="School sites map"
+        aria-label="Main content"
       >
         <div className="dashboard-map-frame">{map}</div>
       </main>
@@ -34,7 +63,23 @@ export function DashboardLayout({ sidebar, map }: Props) {
         id="school-dashboard-split"
         className="dashboard-group"
         defaultLayout={defaultLayout}
-        onLayoutChanged={onLayoutChanged}
+        onLayoutChanged={(layout) => {
+          onLayoutChanged(layout)
+          // Keep dashboard content aligned after drag-resize.
+          const shell = shellRef.current
+          const panel = shell?.querySelector<HTMLElement>(
+            '.dashboard-sidebar-panel',
+          )
+          if (!shell || !panel) return
+          const inset = Math.max(
+            0,
+            Math.round(
+              panel.getBoundingClientRect().right -
+                shell.getBoundingClientRect().left,
+            ),
+          )
+          shell.style.setProperty('--main-content-inset', `${inset}px`)
+        }}
       >
         <Panel
           id="sidebar"

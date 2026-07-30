@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { DashboardLayout } from './components/layout/DashboardLayout'
 import { SchoolMap } from './components/map/SchoolMap'
 import type { SelectedSchool } from './components/map/SchoolPopup'
@@ -15,6 +15,12 @@ function schoolDisplayName(school: SelectedSchool): string {
   return name == null ? 'Selected school' : String(name)
 }
 
+function queryMatchesSelected(query: string, school: SelectedSchool): boolean {
+  const q = query.trim().toLowerCase()
+  if (!q) return false
+  return schoolDisplayName(school).toLowerCase().includes(q)
+}
+
 function App() {
   const dataset = useSchoolDataset()
   const [searchQuery, setSearchQuery] = useState('')
@@ -25,6 +31,11 @@ function App() {
     useState<FacilitySuitabilityRating | null>(null)
 
   const geojson = dataset.status === 'ready' ? dataset.data.geojson : null
+
+  const selectSchool = useCallback((school: SelectedSchool | null) => {
+    setSelectedSchool(school)
+    setSearchQuery(school ? schoolDisplayName(school) : '')
+  }, [])
 
   const statusMessage = useMemo(() => {
     if (dataset.status === 'idle' || dataset.status === 'loading') {
@@ -42,30 +53,29 @@ function App() {
 
   const onSearchChange = (q: string) => {
     setSearchQuery(q)
-    setSelectedSchool(null)
-  }
-
-  const onSelectSchoolFromSearch = (school: SelectedSchool) => {
-    setSearchQuery(schoolDisplayName(school))
-    setSelectedSchool(school)
+    setSelectedSchool((prev) => {
+      if (!prev) return null
+      return queryMatchesSelected(q, prev) ? prev : null
+    })
   }
 
   const onSuitabilityFilterChange = (
     rating: FacilitySuitabilityRating | null,
   ) => {
     setSuitabilityFilter(rating)
-    setSelectedSchool((prev) => {
-      if (!prev || !rating) return prev
-      return prev.properties[facilitySuitabilityProperty] === rating
-        ? prev
-        : null
-    })
+    if (
+      selectedSchool &&
+      rating &&
+      selectedSchool.properties[facilitySuitabilityProperty] !== rating
+    ) {
+      selectSchool(null)
+    }
   }
 
   return (
     <>
       <a className="skip-link" href="#main-content">
-        Skip to map
+        Skip to main content
       </a>
       <div className="visually-hidden" role="status" aria-live="polite">
         {statusMessage}
@@ -75,7 +85,8 @@ function App() {
           <Sidebar
             searchQuery={searchQuery}
             onSearchChange={onSearchChange}
-            onSelectSchool={onSelectSchoolFromSearch}
+            selectedSchool={selectedSchool}
+            onSelectSchool={selectSchool}
             schoolData={geojson}
             suitabilityFilter={suitabilityFilter}
             onSuitabilityFilterChange={onSuitabilityFilterChange}
@@ -93,7 +104,7 @@ function App() {
               searchQuery={searchQuery}
               suitabilityFilter={suitabilityFilter}
               selectedSchool={selectedSchool}
-              onSelectSchool={setSelectedSchool}
+              onSelectSchool={selectSchool}
             />
           </>
         }

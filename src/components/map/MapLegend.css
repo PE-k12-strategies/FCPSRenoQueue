@@ -1,9 +1,9 @@
 .map-legend {
   position: absolute;
-  top: auto;
+  top: 14px;
   left: auto;
   right: 14px;
-  bottom: 38px;
+  bottom: auto;
   z-index: 3;
 
   box-sizing: border-box;
@@ -39,6 +39,17 @@
   border-bottom: 1px solid var(--sidebar-border);
 }
 
+.map-legend--collapsed {
+  padding: 0.4rem 0.45rem;
+  max-width: none;
+}
+
+.map-legend--collapsed .map-legend-view {
+  margin: 0;
+  padding: 0;
+  border-bottom: none;
+}
+
 .map-legend-toggle--view .map-legend-toggle-btn {
   min-height: 1.65rem;
   font-size: 0.66rem;
@@ -47,13 +58,6 @@
 
 .map-legend-metric {
   margin-bottom: 0.55rem;
-}
-
-.map-legend-school-note {
-  margin: 0;
-  font-size: 0.7rem;
-  line-height: 1.4;
-  color: var(--sidebar-muted);
 }
 
 .map-legend-metric .map-legend-title {

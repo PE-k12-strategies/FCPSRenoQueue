@@ -26,7 +26,8 @@ import './Sidebar.css'
 type Props = {
   searchQuery: string
   onSearchChange: (q: string) => void
-  onSelectSchool: (school: SelectedSchool) => void
+  selectedSchool: SelectedSchool | null
+  onSelectSchool: (school: SelectedSchool | null) => void
   schoolData: SchoolFeatureCollection | null
   suitabilityFilter: FacilitySuitabilityRating | null
   onSuitabilityFilterChange: (
@@ -37,6 +38,7 @@ type Props = {
 export function Sidebar({
   searchQuery,
   onSearchChange,
+  selectedSchool,
   onSelectSchool,
   schoolData,
   suitabilityFilter,
@@ -154,7 +156,11 @@ export function Sidebar({
             </svg>
             <input
               id="sidebar-school-search"
-              className="sidebar-search"
+              className={
+                searchQuery.trim() || selectedSchool
+                  ? 'sidebar-search has-clear'
+                  : 'sidebar-search'
+              }
               type="search"
               placeholder="Search schools, address, notes…"
               value={searchQuery}
@@ -201,6 +207,20 @@ export function Sidebar({
                   : undefined
               }
             />
+            {searchQuery.trim() || selectedSchool ? (
+              <button
+                type="button"
+                className="sidebar-search-clear"
+                onClick={() => {
+                  onSelectSchool(null)
+                  setListOpen(false)
+                  setActiveIndex(-1)
+                }}
+                aria-label="Clear school search"
+              >
+                Clear
+              </button>
+            ) : null}
             {showSuggestions ? (
               <ul
                 id={listboxId}
@@ -246,6 +266,7 @@ export function Sidebar({
         <SchoolBrowseList
           schoolData={schoolData}
           searchQuery={searchQuery}
+          selectedSchoolId={selectedSchool?.id ?? null}
           onSelectSchool={onSelectSchool}
         />
 

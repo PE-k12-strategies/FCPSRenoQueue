@@ -67,10 +67,13 @@ export function SchoolMap({
     basemap === 'satellite' ? MAP_STYLE_SATELLITE : MAP_STYLE_LIGHT
   const activeMetric = getMapMetric(mapMetric)
 
-  const displayData = useMemo(
-    () => (data ? filterGeoJsonBySearch(data, searchQuery) : null),
-    [data, searchQuery],
-  )
+  // Keep all sites when a school is selected so others can be dimmed (not removed).
+  // Search still filters the map only while typing / before a selection.
+  const displayData = useMemo(() => {
+    if (!data) return null
+    if (selectedSchool) return data
+    return filterGeoJsonBySearch(data, searchQuery)
+  }, [data, searchQuery, selectedSchool])
 
   /** Matching schools for fitBounds when a suitability filter is active. */
   const focusData = useMemo(
@@ -84,12 +87,34 @@ export function SchoolMap({
   const selectedId = selectedSchool?.id ?? ''
 
   const circleOpacity = useMemo((): number | ExpressionSpecification => {
-    if (!suitabilityFilter) return 0.92
+    // Dim non-matches like the donut filter: keep the selected school (and/or
+    // suitability matches) bright; fade everything else.
+    if (!suitabilityFilter && !selectedId) return 0.92
+
+    const isSelected: ExpressionSpecification = [
+      '==',
+      ['to-string', ['get', 'FCPS_School ID']],
+      selectedId,
+    ]
+
+    if (suitabilityFilter && selectedId) {
+      return [
+        'case',
+        isSelected,
+        0.95,
+        ['==', ['get', facilitySuitabilityProperty], suitabilityFilter],
+        0.92,
+        0.18,
+      ]
+    }
+
+    if (selectedId) {
+      return ['case', isSelected, 0.95, 0.18]
+    }
+
     return [
       'case',
-      ['==', ['to-string', ['get', 'FCPS_School ID']], selectedId],
-      0.95,
-      ['==', ['get', facilitySuitabilityProperty], suitabilityFilter],
+      ['==', ['get', facilitySuitabilityProperty], suitabilityFilter!],
       0.92,
       0.18,
     ]
@@ -160,6 +185,8 @@ export function SchoolMap({
   // Refit when search or suitability highlight set changes.
   useEffect(() => {
     if (!focusData) return
+    // Prefer flying to a single selected school over refitting the whole set.
+    if (selectedSchool) return
     const map = mapRef.current?.getMap()
     if (!map || !map.loaded()) return
     const b = boundsFromPoints(focusData)
@@ -169,7 +196,40 @@ export function SchoolMap({
       maxZoom: 14,
       duration: 450,
     })
-  }, [focusData])
+  }, [focusData, selectedSchool])
+
+  // Ease to the selected school (search, browse, or map).
+  useEffect(() => {
+    if (!selectedSchool || viewMode !== 'map') return
+    const map = mapRef.current?.getMap()
+    if (!map || !map.loaded()) return
+
+    const props = selectedSchool.properties
+    let lng =
+      typeof props.Longitude === 'number'
+        ? props.Longitude
+        : Number(props.Longitude)
+    let lat =
+      typeof props.Latitude === 'number'
+        ? props.Latitude
+        : Number(props.Latitude)
+
+    if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
+      const feature = data?.features.find(
+        (f) => schoolIdFromProps(f.properties as Record<string, unknown>) === selectedSchool.id,
+      )
+      const coords = feature?.geometry?.coordinates
+      if (!coords) return
+      lng = coords[0]
+      lat = coords[1]
+    }
+
+    map.easeTo({
+      center: [lng, lat],
+      zoom: Math.max(map.getZoom(), 12),
+      duration: 600,
+    })
+  }, [selectedSchool, data, viewMode])
 
   const onMouseMove = useCallback((e: MapLayerMouseEvent) => {
     setCursor(e.features && e.features.length > 0 ? 'pointer' : 'default')
@@ -182,37 +242,74 @@ export function SchoolMap({
         onSelectSchool(null)
         return
       }
-      const props = feature.properties as Record<string, unknown>
-      const id = schoolIdFromProps(props)
+      const clickedProps = feature.properties as Record<string, unknown>
+      const id = schoolIdFromProps(clickedProps)
       if (!id) {
         onSelectSchool(null)
         return
       }
-      onSelectSchool({ id, properties: props })
+      // Prefer full joined feature props (Mapbox may stringify/truncate).
+      const fromData = data?.features.find(
+        (f) =>
+          schoolIdFromProps(f.properties as Record<string, unknown>) === id,
+      )
+      onSelectSchool({
+        id,
+        properties:
+          (fromData?.properties as Record<string, unknown> | null) ??
+          clickedProps,
+      })
     },
-    [onSelectSchool],
+    [onSelectSchool, data],
   )
+
+  const legend = (
+    <MapLegend
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
+      basemap={basemap}
+      onBasemapChange={setBasemap}
+      mapMetric={mapMetric}
+      onMapMetricChange={setMapMetric}
+    />
+  )
+
+  // School View replaces the map entirely; left pane stays for school selection.
+  if (viewMode === 'school') {
+    return (
+      <div className="school-map-wrap school-map-wrap--dashboard">
+        <SchoolView school={selectedSchool} />
+        {legend}
+      </div>
+    )
+  }
 
   if (!token || !token.trim()) {
     return (
-      <div
-        className="map-placeholder map-placeholder--error"
-        role="alert"
-      >
-        <p className="map-placeholder-title">Mapbox token missing</p>
-        <p className="map-placeholder-body">
-          Create a <code>.env</code> file next to{' '}
-          <code>package.json</code> and set{' '}
-          <code>VITE_MAPBOX_TOKEN</code>. See <code>.env.example</code>.
-        </p>
+      <div className="school-map-wrap">
+        <div
+          className="map-placeholder map-placeholder--error"
+          role="alert"
+        >
+          <p className="map-placeholder-title">Mapbox token missing</p>
+          <p className="map-placeholder-body">
+            Create a <code>.env</code> file next to{' '}
+            <code>package.json</code> and set{' '}
+            <code>VITE_MAPBOX_TOKEN</code>. See <code>.env.example</code>.
+          </p>
+        </div>
+        {legend}
       </div>
     )
   }
 
   if (!displayData) {
     return (
-      <div className="map-placeholder" role="status" aria-live="polite">
-        <p>Loading map data…</p>
+      <div className="school-map-wrap">
+        <div className="map-placeholder" role="status" aria-live="polite">
+          <p>Loading map data…</p>
+        </div>
+        {legend}
       </div>
     )
   }
@@ -253,7 +350,7 @@ export function SchoolMap({
             queueMicrotask(resizeMap)
           }}
         >
-          <NavigationControl position="top-right" showCompass={false} />
+          <NavigationControl position="bottom-right" showCompass={false} />
           <Source id="school-sites" type="geojson" data={displayData}>
             <Layer
               id={SCHOOL_LAYER_ID}
@@ -280,18 +377,10 @@ export function SchoolMap({
           </Source>
         </Map>
       </div>
-      {viewMode === 'school' ? <SchoolView /> : null}
 
-      <MapLegend
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        basemap={basemap}
-        onBasemapChange={setBasemap}
-        mapMetric={mapMetric}
-        onMapMetricChange={setMapMetric}
-      />
+      {legend}
 
-      {viewMode === 'map' && selectedSchool ? (
+      {selectedSchool ? (
         <SchoolPopup
           school={selectedSchool}
           onClose={() => onSelectSchool(null)}

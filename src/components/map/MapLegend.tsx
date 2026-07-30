@@ -30,9 +30,21 @@ export function MapLegend({
   const showMapControls = viewMode === 'map'
 
   return (
-    <section className="map-legend" aria-label="Map legend and view controls">
+    <section
+      className={
+        showMapControls ? 'map-legend' : 'map-legend map-legend--collapsed'
+      }
+      aria-label="View controls and map legend"
+    >
       <div className="map-legend-view">
-        <p className="map-legend-title" id="view-mode-legend">
+        <p
+          className={
+            showMapControls
+              ? 'map-legend-title'
+              : 'map-legend-title visually-hidden'
+          }
+          id="view-mode-legend"
+        >
           View
         </p>
         <div
@@ -122,11 +134,7 @@ export function MapLegend({
             </div>
           </div>
         </>
-      ) : (
-        <p className="map-legend-school-note">
-          School View controls will appear here.
-        </p>
-      )}
+      ) : null}
     </section>
   )
 }

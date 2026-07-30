@@ -43,9 +43,13 @@ export function joinGeoJsonWithCsv(
       ...(merged ?? {}),
     }
 
-    // Keep GeoJSON Building SF (and similar site attributes) for popup display.
+    // Keep GeoJSON Building SF for popup display; retain CSV score separately.
     if (geoProps) {
       for (const key of geoPreferredKeys) {
+        const csvValue = merged?.[key]
+        if (csvValue != null && String(csvValue).trim() !== '') {
+          props[`${key} Score`] = csvValue
+        }
         const geoValue = geoProps[key]
         if (geoValue != null && String(geoValue).trim() !== '') {
           props[key] = geoValue
