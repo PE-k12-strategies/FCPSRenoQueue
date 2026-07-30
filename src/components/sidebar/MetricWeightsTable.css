@@ -45,13 +45,19 @@
   align-items: center;
   gap: 0.3rem;
   min-width: 0;
-  padding: 0;
+  min-height: 1.75rem;
+  padding: 0.15rem 0.1rem;
   border: none;
   background: transparent;
   font: inherit;
   color: inherit;
   cursor: pointer;
   text-align: left;
+}
+
+.metric-weights-expand:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .metric-weights-expand:hover .metric-weights-label {
@@ -93,16 +99,20 @@
 }
 
 .metric-weights-control:focus-within {
-  border-color: rgba(0, 0, 0, 0.4);
+  border-color: var(--focus-ring);
   background: #fff;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
 }
 
 .metric-weights-step {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  min-width: 24px;
+  min-height: 24px;
   padding: 0;
   border: none;
   border-radius: 2px;
@@ -117,7 +127,12 @@
 
 .metric-weights-step:hover {
   background: rgba(0, 0, 0, 0.06);
-  color: var(--accent);
+  color: var(--accent-text);
+}
+
+.metric-weights-step:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
 }
 
 .metric-weights-input {
@@ -185,15 +200,15 @@
 }
 
 .metric-weights-total.is-invalid {
-  color: var(--accent);
+  color: var(--danger-text);
 }
 
 .metric-weights-hint {
   margin: 0.25rem 0 0;
   padding-left: 0.85rem;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   line-height: 1.35;
-  color: var(--accent);
+  color: var(--danger-text);
 }
 
 .metric-weights > .metric-weights-hint {

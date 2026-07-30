@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { ExpressionSpecification } from 'mapbox-gl'
 import Map, {
   Layer,
   NavigationControl,
@@ -10,6 +11,11 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { circleColorExpression } from '../../config/legend'
 import { boundsFromPoints } from '../../lib/geoBounds'
 import { filterGeoJsonBySearch } from '../../lib/filterGeoJsonBySearch'
+import { filterGeoJsonBySuitability } from '../../lib/filterGeoJsonBySuitability'
+import {
+  facilitySuitabilityProperty,
+  type FacilitySuitabilityRating,
+} from '../../lib/facilitySuitability'
 import type { SchoolFeatureCollection } from '../../types/data'
 import { MapLegend, type BasemapMode } from './MapLegend'
 import { SchoolPopup, type SelectedSchool } from './SchoolPopup'
@@ -27,6 +33,7 @@ type Props = {
   /** Enriched GeoJSON (already merged with CSV columns). */
   data: SchoolFeatureCollection | null
   searchQuery: string
+  suitabilityFilter: FacilitySuitabilityRating | null
   selectedSchool: SelectedSchool | null
   onSelectSchool: (school: SelectedSchool | null) => void
 }
@@ -40,6 +47,7 @@ function schoolIdFromProps(props: Record<string, unknown> | null | undefined) {
 export function SchoolMap({
   data,
   searchQuery,
+  suitabilityFilter,
   selectedSchool,
   onSelectSchool,
 }: Props) {
@@ -56,7 +64,28 @@ export function SchoolMap({
     [data, searchQuery],
   )
 
+  /** Matching schools for fitBounds when a suitability filter is active. */
+  const focusData = useMemo(
+    () =>
+      displayData
+        ? filterGeoJsonBySuitability(displayData, suitabilityFilter)
+        : null,
+    [displayData, suitabilityFilter],
+  )
+
   const selectedId = selectedSchool?.id ?? ''
+
+  const circleOpacity = useMemo((): number | ExpressionSpecification => {
+    if (!suitabilityFilter) return 0.92
+    return [
+      'case',
+      ['==', ['to-string', ['get', 'FCPS_School ID']], selectedId],
+      0.95,
+      ['==', ['get', facilitySuitabilityProperty], suitabilityFilter],
+      0.92,
+      0.18,
+    ]
+  }, [suitabilityFilter, selectedId])
 
   const initialViewState = useMemo(() => {
     if (!displayData) {
@@ -120,6 +149,20 @@ export function SchoolMap({
     }
   }, [displayData, token, resizeMap])
 
+  // Refit when search or suitability highlight set changes.
+  useEffect(() => {
+    if (!focusData) return
+    const map = mapRef.current?.getMap()
+    if (!map || !map.loaded()) return
+    const b = boundsFromPoints(focusData)
+    if (!b) return
+    map.fitBounds(b as [[number, number], [number, number]], {
+      padding: 56,
+      maxZoom: 14,
+      duration: 450,
+    })
+  }, [focusData])
+
   const onMouseMove = useCallback((e: MapLayerMouseEvent) => {
     setCursor(e.features && e.features.length > 0 ? 'pointer' : 'default')
   }, [])
@@ -144,7 +187,10 @@ export function SchoolMap({
 
   if (!token || !token.trim()) {
     return (
-      <div className="map-placeholder map-placeholder--error">
+      <div
+        className="map-placeholder map-placeholder--error"
+        role="alert"
+      >
         <p className="map-placeholder-title">Mapbox token missing</p>
         <p className="map-placeholder-body">
           Create a <code>.env</code> file next to{' '}
@@ -157,15 +203,28 @@ export function SchoolMap({
 
   if (!displayData) {
     return (
-      <div className="map-placeholder">
+      <div className="map-placeholder" role="status" aria-live="polite">
         <p>Loading map data…</p>
       </div>
     )
   }
 
+  const schoolCount = displayData.features.length
+
   return (
     <div className="school-map-wrap">
-      <div ref={mapStageRef} className="school-map-stage">
+      <p className="visually-hidden" id="map-instructions">
+        Interactive map of school sites colored by facility suitability. Use
+        search or Browse schools in the sidebar to select a school with the
+        keyboard. Map zoom controls are available after the map canvas.
+      </p>
+      <div
+        ref={mapStageRef}
+        className="school-map-stage"
+        role="region"
+        aria-label={`School sites map, ${schoolCount} school${schoolCount === 1 ? '' : 's'} shown`}
+        aria-describedby="map-instructions"
+      >
         <Map
           ref={mapRef}
           style={{ width: '100%', height: '100%' }}
@@ -195,18 +254,19 @@ export function SchoolMap({
                 'circle-radius': [
                   'case',
                   ['==', ['to-string', ['get', 'FCPS_School ID']], selectedId],
-                  12,
-                  9,
+                  7,
+                  5,
                 ],
                 'circle-color': circleColorExpression,
                 'circle-stroke-width': [
                   'case',
                   ['==', ['to-string', ['get', 'FCPS_School ID']], selectedId],
-                  3,
                   2,
+                  1.5,
                 ],
                 'circle-stroke-color': '#ffffff',
-                'circle-opacity': 0.92,
+                'circle-opacity': circleOpacity,
+                'circle-stroke-opacity': circleOpacity,
               }}
             />
           </Source>

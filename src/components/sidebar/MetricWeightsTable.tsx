@@ -35,11 +35,10 @@ function PercentControl({
 }) {
   return (
     <div className="metric-weights-control" title="Adjustable weight">
-      <span className="visually-hidden">{label} weight percent</span>
       <button
         type="button"
         className="metric-weights-step"
-        aria-label={`Decrease ${label}`}
+        aria-label={`Decrease ${label} weight`}
         onClick={() => onChange(clampPercent(value - 1))}
       >
         −
@@ -61,7 +60,7 @@ function PercentControl({
       <button
         type="button"
         className="metric-weights-step"
-        aria-label={`Increase ${label}`}
+        aria-label={`Increase ${label} weight`}
         onClick={() => onChange(clampPercent(value + 1))}
       >
         +
@@ -123,6 +122,7 @@ export function MetricWeightsTable({
                         type="button"
                         className="metric-weights-expand"
                         aria-expanded={isOpen}
+                        aria-controls={`metric-subs-${row.id}`}
                         onClick={() => toggleSub(row.id)}
                       >
                         <span className="metric-weights-label">{row.label}</span>
@@ -144,7 +144,12 @@ export function MetricWeightsTable({
                   </div>
 
                   {hasSubs && isOpen && parentKey && row.subMetrics ? (
-                    <div className="metric-weights-subs">
+                    <div
+                      className="metric-weights-subs"
+                      id={`metric-subs-${row.id}`}
+                      role="region"
+                      aria-label={`${row.label} submetrics`}
+                    >
                       {row.subMetrics.map((sub) => (
                         <div key={sub.id} className="metric-weights-row is-sub">
                           <span className="metric-weights-label">
@@ -168,7 +173,11 @@ export function MetricWeightsTable({
                         </span>
                       </div>
                       {!subTotalOk ? (
-                        <p className="metric-weights-hint" role="status">
+                        <p
+                          className="metric-weights-hint"
+                          role="status"
+                          aria-live="polite"
+                        >
                           Submetrics should total 100%.
                         </p>
                       ) : null}
@@ -193,7 +202,7 @@ export function MetricWeightsTable({
         </tfoot>
       </table>
       {!totalOk ? (
-        <p className="metric-weights-hint" role="status">
+        <p className="metric-weights-hint" role="status" aria-live="polite">
           Top-level weights should total 100%.
         </p>
       ) : null}

@@ -58,9 +58,10 @@ export const schoolMetricSections: SchoolMetricSection[] = [
 ]
 
 export const schoolDisplayFields = [
-  { key: 'School', label: 'School' },
-  { key: 'FCPS_School ID', label: 'FCPS School ID' },
   { key: 'School Type', label: 'School Type' },
-  { key: 'Region', label: 'Region' },
+  { key: 'Year Opened', label: 'Year Opened' },
+  { key: 'Building SF', label: 'Building SF' },
+  { key: 'NCES Street Address', label: 'NCES Street Address' },
   { key: 'NCES City', label: 'City' },
+  { key: 'Region', label: 'Region' },
 ] as const

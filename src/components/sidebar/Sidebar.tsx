@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { appConfig } from '../../config/appConfig'
 import {
   defaultQueueMetricWeights,
@@ -9,30 +9,91 @@ import {
   type QueueSubMetricWeights,
 } from '../../config/queueMetrics'
 import { summarizeFacilitySuitability } from '../../lib/districtOverview'
+import type { FacilitySuitabilityRating } from '../../lib/facilitySuitability'
+import {
+  filterSchoolNameSuggestions,
+  listSchoolNames,
+  type SchoolNameSuggestion,
+} from '../../lib/schoolNameSuggestions'
 import type { SchoolFeatureCollection } from '../../types/data'
+import type { SelectedSchool } from '../map/SchoolPopup'
 import footerBrandLogo from '../../assets/branding/perkins-eastman-logo.png'
 import { DistrictOverview } from './DistrictOverview'
 import { MetricWeightsTable } from './MetricWeightsTable'
+import { SchoolBrowseList } from './SchoolBrowseList'
 import './Sidebar.css'
 
 type Props = {
   searchQuery: string
   onSearchChange: (q: string) => void
+  onSelectSchool: (school: SelectedSchool) => void
   schoolData: SchoolFeatureCollection | null
+  suitabilityFilter: FacilitySuitabilityRating | null
+  onSuitabilityFilterChange: (
+    rating: FacilitySuitabilityRating | null,
+  ) => void
 }
 
-export function Sidebar({ searchQuery, onSearchChange, schoolData }: Props) {
+export function Sidebar({
+  searchQuery,
+  onSearchChange,
+  onSelectSchool,
+  schoolData,
+  suitabilityFilter,
+  onSuitabilityFilterChange,
+}: Props) {
   const [weights, setWeights] = useState<QueueMetricWeights>(
     defaultQueueMetricWeights,
   )
   const [subWeights, setSubWeights] = useState<QueueSubMetricWeights>(
     defaultQueueSubMetricWeights,
   )
+  const [listOpen, setListOpen] = useState(false)
+  const [activeIndex, setActiveIndex] = useState(-1)
+  const searchWrapRef = useRef<HTMLDivElement>(null)
+  const listboxId = useId()
+
+  const allSchools = useMemo(() => listSchoolNames(schoolData), [schoolData])
+  const suggestions = useMemo(
+    () => filterSchoolNameSuggestions(allSchools, searchQuery),
+    [allSchools, searchQuery],
+  )
+  const showSuggestions = listOpen && suggestions.length > 0
 
   const suitability = useMemo(
     () => summarizeFacilitySuitability(schoolData),
     [schoolData],
   )
+
+  const resultsStatus =
+    searchQuery.trim().length === 0
+      ? ''
+      : suggestions.length === 0
+        ? 'No matching school names.'
+        : `${suggestions.length} school suggestion${suggestions.length === 1 ? '' : 's'} available.`
+
+  useEffect(() => {
+    setActiveIndex(-1)
+  }, [searchQuery])
+
+  useEffect(() => {
+    const onPointerDown = (e: PointerEvent) => {
+      if (!searchWrapRef.current?.contains(e.target as Node)) {
+        setListOpen(false)
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => document.removeEventListener('pointerdown', onPointerDown)
+  }, [])
+
+  const pickSuggestion = (suggestion: SchoolNameSuggestion) => {
+    onSelectSchool({
+      id: suggestion.id,
+      properties: suggestion.properties,
+    })
+    setListOpen(false)
+    setActiveIndex(-1)
+  }
 
   const onWeightChange = (id: QueueMetricId, value: number) => {
     setWeights((prev) => ({ ...prev, [id]: value }))
@@ -70,8 +131,12 @@ export function Sidebar({ searchQuery, onSearchChange, schoolData }: Props) {
           <p className="sidebar-intro">{appConfig.intro}</p>
         </header>
 
-        <label className="sidebar-search-label">
-          <span className="visually-hidden">Search schools and address</span>
+        <div className="sidebar-search-label" ref={searchWrapRef}>
+          <label htmlFor="sidebar-school-search">
+            <span className="visually-hidden">
+              Search schools by name, address, or notes
+            </span>
+          </label>
           <div className="sidebar-search-wrap">
             <svg
               className="sidebar-search-icon"
@@ -88,18 +153,106 @@ export function Sidebar({ searchQuery, onSearchChange, schoolData }: Props) {
               <path d="M21 21l-4.2-4.2" />
             </svg>
             <input
+              id="sidebar-school-search"
               className="sidebar-search"
               type="search"
               placeholder="Search schools, address, notes…"
               value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
+              onChange={(e) => {
+                onSearchChange(e.target.value)
+                setListOpen(true)
+              }}
+              onFocus={() => setListOpen(true)}
+              onKeyDown={(e) => {
+                if (!showSuggestions && e.key !== 'Escape') {
+                  if (e.key === 'ArrowDown' && suggestions.length > 0) {
+                    e.preventDefault()
+                    setListOpen(true)
+                    setActiveIndex(0)
+                  }
+                  return
+                }
+                if (e.key === 'ArrowDown') {
+                  e.preventDefault()
+                  setListOpen(true)
+                  setActiveIndex((i) =>
+                    Math.min(i + 1, suggestions.length - 1),
+                  )
+                } else if (e.key === 'ArrowUp') {
+                  e.preventDefault()
+                  setActiveIndex((i) => Math.max(i - 1, 0))
+                } else if (e.key === 'Enter' && activeIndex >= 0) {
+                  e.preventDefault()
+                  pickSuggestion(suggestions[activeIndex])
+                } else if (e.key === 'Escape') {
+                  setListOpen(false)
+                  setActiveIndex(-1)
+                }
+              }}
               autoComplete="off"
+              role="combobox"
+              aria-expanded={showSuggestions}
+              aria-controls={listboxId}
+              aria-haspopup="listbox"
+              aria-autocomplete="list"
+              aria-activedescendant={
+                activeIndex >= 0
+                  ? `${listboxId}-option-${activeIndex}`
+                  : undefined
+              }
             />
+            {showSuggestions ? (
+              <ul
+                id={listboxId}
+                className="sidebar-search-suggestions"
+                role="listbox"
+                aria-label="Matching school names"
+              >
+                {suggestions.map((suggestion, index) => (
+                  <li
+                    key={suggestion.id}
+                    id={`${listboxId}-option-${index}`}
+                    role="option"
+                    aria-selected={index === activeIndex}
+                    className={
+                      index === activeIndex
+                        ? 'sidebar-search-suggestion is-active'
+                        : 'sidebar-search-suggestion'
+                    }
+                    onMouseEnter={() => setActiveIndex(index)}
+                    onMouseDown={(e) => {
+                      e.preventDefault()
+                      pickSuggestion(suggestion)
+                    }}
+                  >
+                    <span className="sidebar-search-suggestion-name">
+                      {suggestion.name}
+                    </span>
+                    {suggestion.schoolType ? (
+                      <span className="sidebar-search-suggestion-meta">
+                        {suggestion.schoolType}
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
-        </label>
+          <div className="visually-hidden" role="status" aria-live="polite">
+            {listOpen ? resultsStatus : ''}
+          </div>
+        </div>
+
+        <SchoolBrowseList
+          schoolData={schoolData}
+          searchQuery={searchQuery}
+          onSelectSchool={onSelectSchool}
+        />
 
         <div className="sidebar-body">
-          <h2 className="sidebar-section-title">Renovation Queue Metric</h2>
+          <h2 className="sidebar-section-title" id="queue-metric-title">
+            Renovation Queue Metric
+          </h2>
           <p className="sidebar-section-copy">
             Adjust how each metric contributes to the renovation queue. Expand a
             metric to set its submetric weights.
@@ -111,7 +264,11 @@ export function Sidebar({ searchQuery, onSearchChange, schoolData }: Props) {
             onSubChange={onSubChange}
           />
 
-          <DistrictOverview suitability={suitability} />
+          <DistrictOverview
+            suitability={suitability}
+            selectedRating={suitabilityFilter}
+            onSelectRating={onSuitabilityFilterChange}
+          />
         </div>
 
         <footer className="sidebar-footer">

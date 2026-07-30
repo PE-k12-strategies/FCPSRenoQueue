@@ -13,7 +13,7 @@ export function AccordionSection({ section, expanded, onToggle }: Props) {
   const panelId = `acc-${section.id}-panel`
 
   return (
-    <section className="accordion-card" role="listitem">
+    <section className="accordion-card">
       <button
         type="button"
         className="accordion-trigger"

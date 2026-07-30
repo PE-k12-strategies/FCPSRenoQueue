@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useCallback, useId, useState } from 'react'
 import {
   schoolDisplayFields,
   schoolMetricSections,
 } from '../../config/schoolMetrics'
+import { useDialogFocus } from '../../hooks/useDialogFocus'
 import { AccordionSection } from '../sidebar/AccordionSection'
 import type { SidebarSection } from '../../config/sidebarSections'
 import './SchoolPopup.css'
@@ -22,8 +23,10 @@ function propString(
   key: string,
 ): string | undefined {
   const v = props[key]
-  if (v == null || v === '') return undefined
-  return String(v)
+  if (v == null) return undefined
+  const s = String(v).trim()
+  if (s === '' || s === '---') return undefined
+  return s
 }
 
 function buildMetricSection(
@@ -65,6 +68,10 @@ function buildMetricSection(
 
 export function SchoolPopup({ school, onClose }: Props) {
   const [openId, setOpenId] = useState<string | null>('facility-suitability')
+  const titleId = useId()
+  const handleClose = useCallback(() => onClose(), [onClose])
+  const dialogRef = useDialogFocus(true, handleClose)
+
   const name =
     propString(school.properties, 'School') ??
     propString(school.properties, 'NCES School Name') ??
@@ -75,16 +82,25 @@ export function SchoolPopup({ school, onClose }: Props) {
   )
 
   return (
-    <div className="school-popup" role="dialog" aria-label={name}>
+    <div
+      ref={dialogRef}
+      className="school-popup"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      tabIndex={-1}
+    >
       <header className="school-popup-header">
         <div className="school-popup-heading">
           <p className="school-popup-kicker">School details</p>
-          <h2 className="school-popup-title">{name}</h2>
+          <h2 id={titleId} className="school-popup-title">
+            {name}
+          </h2>
         </div>
         <button
           type="button"
           className="school-popup-close"
-          onClick={onClose}
+          onClick={handleClose}
           aria-label="Close school details"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -112,18 +128,26 @@ export function SchoolPopup({ school, onClose }: Props) {
           })}
         </dl>
 
-        <div className="school-popup-metrics" role="list">
-          <p className="school-popup-metrics-label">School metrics</p>
-          {metrics.map((section) => (
-            <AccordionSection
-              key={section.id}
-              section={section}
-              expanded={openId === section.id}
-              onToggle={() =>
-                setOpenId((prev) => (prev === section.id ? null : section.id))
-              }
-            />
-          ))}
+        <div className="school-popup-metrics">
+          <p className="school-popup-metrics-label" id="school-metrics-heading">
+            School metrics
+          </p>
+          <div
+            className="school-popup-metrics-list"
+            role="region"
+            aria-labelledby="school-metrics-heading"
+          >
+            {metrics.map((section) => (
+              <AccordionSection
+                key={section.id}
+                section={section}
+                expanded={openId === section.id}
+                onToggle={() =>
+                  setOpenId((prev) => (prev === section.id ? null : section.id))
+                }
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

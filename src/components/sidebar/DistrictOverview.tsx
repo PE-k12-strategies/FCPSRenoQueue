@@ -1,12 +1,19 @@
 import type { FacilitySuitabilitySummary } from '../../lib/districtOverview'
+import type { FacilitySuitabilityRating } from '../../lib/facilitySuitability'
 import { SuitabilityDonut } from './SuitabilityDonut'
 import './DistrictOverview.css'
 
 type Props = {
   suitability: FacilitySuitabilitySummary
+  selectedRating: FacilitySuitabilityRating | null
+  onSelectRating: (rating: FacilitySuitabilityRating | null) => void
 }
 
-export function DistrictOverview({ suitability }: Props) {
+export function DistrictOverview({
+  suitability,
+  selectedRating,
+  onSelectRating,
+}: Props) {
   return (
     <section className="district-overview" aria-labelledby="district-overview-title">
       <h2 id="district-overview-title" className="sidebar-section-title">
@@ -22,7 +29,7 @@ export function DistrictOverview({ suitability }: Props) {
 
       <div className="district-overview-block">
         <h3 className="district-overview-subtitle">Facilities Suitability</h3>
-        <p className="district-overview-note">
+        <p className="district-overview-note" role="status" aria-live="polite">
           {suitability.ratedCount > 0
             ? `${suitability.ratedCount} of ${suitability.totalSchools} schools rated`
             : 'Loading suitability ratings…'}
@@ -30,6 +37,8 @@ export function DistrictOverview({ suitability }: Props) {
         <SuitabilityDonut
           rows={suitability.rows}
           ratedCount={suitability.ratedCount}
+          selectedRating={selectedRating}
+          onSelectRating={onSelectRating}
         />
       </div>
     </section>

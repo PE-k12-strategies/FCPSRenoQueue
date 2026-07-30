@@ -20,9 +20,14 @@ export function DashboardLayout({ sidebar, map }: Props) {
 
   return (
     <div className="dashboard-shell">
-      <div className="dashboard-map-bleed">
+      <main
+        id="main-content"
+        className="dashboard-map-bleed"
+        tabIndex={-1}
+        aria-label="School sites map"
+      >
         <div className="dashboard-map-frame">{map}</div>
-      </div>
+      </main>
 
       <Group
         orientation="horizontal"
@@ -40,13 +45,12 @@ export function DashboardLayout({ sidebar, map }: Props) {
         >
           <div className="dashboard-sidebar-inset">{sidebar}</div>
         </Panel>
-        <Separator className="dashboard-resize-handle" />
-        {/* Transparent spacer — map interaction is handled by the bleed layer beneath. */}
-        <Panel
-          id="map"
-          className="dashboard-map-spacer"
-          minSize="33%"
+        <Separator
+          className="dashboard-resize-handle"
+          aria-label="Resize sidebar and map"
         />
+        {/* Transparent spacer — map interaction is handled by the bleed layer beneath. */}
+        <Panel id="map" className="dashboard-map-spacer" minSize="33%" />
       </Group>
     </div>
   )
