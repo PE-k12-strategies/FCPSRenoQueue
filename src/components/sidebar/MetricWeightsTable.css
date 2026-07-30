@@ -1,0 +1,216 @@
+.metric-weights {
+  margin-top: 0.55rem;
+}
+
+.metric-weights-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.metric-weights-table thead th {
+  padding: 0.3rem 0.1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sidebar-muted);
+  text-align: left;
+}
+
+.metric-weights-table thead th:last-child {
+  text-align: right;
+}
+
+.metric-weights-block-cell {
+  padding: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.metric-weights-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.1rem;
+}
+
+.metric-weights-row.is-sub {
+  padding: 0.28rem 0.1rem 0.28rem 0.85rem;
+}
+
+.metric-weights-expand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+  min-height: 1.75rem;
+  padding: 0.15rem 0.1rem;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.metric-weights-expand:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.metric-weights-expand:hover .metric-weights-label {
+  color: var(--accent-hover);
+}
+
+.metric-weights-chevron {
+  display: inline-block;
+  color: #6b6b6b;
+  transition: transform 0.15s ease;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.metric-weights-chevron.is-open {
+  transform: rotate(90deg);
+  color: var(--accent);
+}
+
+.metric-weights-label {
+  font-weight: 600;
+  color: var(--sidebar-heading);
+}
+
+.metric-weights-row.is-sub .metric-weights-label {
+  font-weight: 500;
+  color: var(--sidebar-text);
+}
+
+.metric-weights-control {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 0.1rem;
+  padding: 0.08rem 0.12rem;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 2px;
+  background: #f5f5f5;
+}
+
+.metric-weights-control:focus-within {
+  border-color: var(--focus-ring);
+  background: #fff;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.metric-weights-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--sidebar-heading);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.metric-weights-step:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--accent-text);
+}
+
+.metric-weights-step:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.metric-weights-input {
+  width: 2.1rem;
+  box-sizing: border-box;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--sidebar-heading);
+  text-align: center;
+  appearance: textfield;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-weights-input::-webkit-outer-spin-button,
+.metric-weights-input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.metric-weights-input:focus {
+  outline: none;
+}
+
+.metric-weights-suffix {
+  color: var(--sidebar-muted);
+  font-weight: 600;
+  padding-right: 0.05rem;
+}
+
+.metric-weights-subs {
+  padding: 0 0 0.2rem;
+}
+
+.metric-weights-subtotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.2rem 0.1rem 0.15rem 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--sidebar-muted);
+}
+
+.metric-weights-table tfoot th,
+.metric-weights-table tfoot td {
+  padding: 0.45rem 0.1rem 0.1rem;
+  border-bottom: none;
+  font-weight: 700;
+  color: var(--sidebar-heading);
+  text-align: left;
+}
+
+.metric-weights-table tfoot td {
+  text-align: right;
+}
+
+.metric-weights-total {
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-weights-total.is-invalid {
+  color: var(--danger-text);
+}
+
+.metric-weights-hint {
+  margin: 0.25rem 0 0;
+  padding-left: 0.85rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--danger-text);
+}
+
+.metric-weights > .metric-weights-hint {
+  padding-left: 0.1rem;
+}

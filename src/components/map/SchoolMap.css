@@ -9,6 +9,10 @@
   background: #000;
 }
 
+.school-map-wrap--dashboard {
+  background: var(--shell-bg);
+}
+
 /* Only size the map root — not the legend (both were direct `div` children). */
 .school-map-stage {
   position: absolute;

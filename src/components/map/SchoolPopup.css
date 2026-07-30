@@ -1,0 +1,178 @@
+.school-popup {
+  position: absolute;
+  top: auto;
+  bottom: 38px;
+  /* Sit in the map area (right of the left pane), clear of top-right legend. */
+  left: calc(var(--main-content-inset, 33%) + var(--inset-gap));
+  right: auto;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  width: min(19.5rem, calc(100% - 28px));
+  max-height: calc(100% - 56px);
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 1px 4px rgba(0, 0, 0, 0.06);
+  pointer-events: auto;
+}
+
+.school-popup-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.school-popup-heading {
+  min-width: 0;
+}
+
+.school-popup-kicker {
+  margin: 0 0 0.1rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--sidebar-muted);
+}
+
+.school-popup-title {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--sidebar-heading);
+}
+
+.school-popup-close {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0;
+  border: none;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: #6b6b6b;
+  cursor: pointer;
+}
+
+.school-popup-close:hover {
+  color: var(--accent-text);
+}
+
+.school-popup-close:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.school-popup-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0.5rem 0.75rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+}
+
+.school-popup-meta {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.school-popup-meta-row {
+  display: grid;
+  grid-template-columns: 6.25rem 1fr;
+  gap: 0.35rem;
+  padding: 0.28rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.school-popup-meta-row dt {
+  margin: 0;
+  color: var(--sidebar-muted);
+  font-weight: 500;
+}
+
+.school-popup-meta-row dd {
+  margin: 0;
+  color: var(--sidebar-heading);
+  font-weight: 600;
+}
+
+.school-popup-metrics-label {
+  margin: 0 0 0.15rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--sidebar-muted);
+}
+
+.school-popup-metrics {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  padding-top: 0.15rem;
+}
+
+/* Compact accordion overrides scoped to the popup */
+.school-popup .accordion-trigger {
+  gap: 0.4rem;
+  padding: 0.4rem 0;
+}
+
+.school-popup .accordion-title {
+  font-size: 0.8rem;
+  line-height: 1.25;
+}
+
+.school-popup .accordion-status {
+  margin-left: 0.3rem;
+  padding: 0.12rem 0.35rem;
+  font-size: 0.6rem;
+  border: none;
+}
+
+.school-popup .accordion-chevron {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.school-popup .accordion-panel {
+  padding: 0 0 0.45rem 0.55rem;
+}
+
+.school-popup .accordion-body {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.school-popup .accordion-hint {
+  font-size: 0.7rem;
+}
+
+.school-popup .subdata-item {
+  font-size: 0.7rem;
+  line-height: 1.3;
+  padding: 0.28rem 0;
+}

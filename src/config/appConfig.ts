@@ -5,7 +5,7 @@
 export const appConfig = {
   /** Served from `public/fcps-logo.png` */
   logoUrl: '/fcps-logo.png',
-  logoAlt: 'FCPS',
+  logoAlt: 'Fairfax County Public Schools',
   /** Alt text for footer brand mark (image URL is bundled via import in Sidebar). */
   footerLogoAlt: 'Perkins Eastman',
   title: 'Fairfax County Public Schools: Renovation Queue Criteria',

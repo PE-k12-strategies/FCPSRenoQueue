@@ -28,15 +28,34 @@ export function joinGeoJsonWithCsv(
     byCsvId.set(id, { ...prev, ...row })
   }
 
+  /** Site fields that must stay from GeoJSON even when CSV has the same column name. */
+  const geoPreferredKeys = ['Building SF'] as const
+
   const featureIds = new Set<string>()
   const features: Feature<Point>[] = collection.features.map((f) => {
     const id = featureId(f, geoJsonIdField)
     const merged = id ? byCsvId.get(id) : undefined
     if (id) featureIds.add(id)
-    const props =
-      f.properties && typeof f.properties === 'object'
-        ? { ...f.properties, ...(merged ?? {}) }
-        : { ...(merged ?? {}) }
+    const geoProps =
+      f.properties && typeof f.properties === 'object' ? f.properties : null
+    const props: Record<string, unknown> = {
+      ...(geoProps ?? {}),
+      ...(merged ?? {}),
+    }
+
+    // Keep GeoJSON Building SF for popup display; retain CSV score separately.
+    if (geoProps) {
+      for (const key of geoPreferredKeys) {
+        const csvValue = merged?.[key]
+        if (csvValue != null && String(csvValue).trim() !== '') {
+          props[`${key} Score`] = csvValue
+        }
+        const geoValue = geoProps[key]
+        if (geoValue != null && String(geoValue).trim() !== '') {
+          props[key] = geoValue
+        }
+      }
+    }
 
     return {
       ...f,

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { dataConfig } from '../config/dataConfig'
+import { assignFacilitySuitability } from '../lib/facilitySuitability'
 import { fetchText } from '../lib/fetchText'
 import { joinGeoJsonWithCsv } from '../lib/joinGeoJsonWithCsv'
 import { parseCsv } from '../lib/parseCsv'
@@ -57,9 +58,13 @@ export function useSchoolDataset(): LoadState {
           dataConfig.geoJsonIdField,
           dataConfig.csvIdField,
         )
+        const withSuitability = {
+          ...joined,
+          geojson: assignFacilitySuitability(joined.geojson),
+        }
 
         if (!cancelled) {
-          setState({ status: 'ready', data: joined })
+          setState({ status: 'ready', data: withSuitability })
         }
       } catch (e) {
         if (!cancelled) {

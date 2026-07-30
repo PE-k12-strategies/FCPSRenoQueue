@@ -1,3 +1,4 @@
+import { facilitySuitabilityColors } from '../../config/legend'
 import type { SidebarSection } from '../../config/sidebarSections'
 import { SubDataGrid } from './SubDataGrid'
 import './AccordionSection.css'
@@ -8,12 +9,16 @@ type Props = {
   onToggle: () => void
 }
 
+function statusLabelColor(fill: string): string {
+  return fill === facilitySuitabilityColors.Fair ? '#422006' : '#ffffff'
+}
+
 export function AccordionSection({ section, expanded, onToggle }: Props) {
   const titleId = `acc-${section.id}-title`
   const panelId = `acc-${section.id}-panel`
 
   return (
-    <section className="accordion-card" role="listitem">
+    <section className="accordion-card">
       <button
         type="button"
         className="accordion-trigger"
@@ -25,7 +30,19 @@ export function AccordionSection({ section, expanded, onToggle }: Props) {
         <span className="accordion-trigger-text">
           <span className="accordion-title">{section.title}</span>
           {section.statusTag ? (
-            <span className="accordion-status">{section.statusTag}</span>
+            <span
+              className="accordion-status"
+              style={
+                section.statusTagColor
+                  ? {
+                      background: section.statusTagColor,
+                      color: statusLabelColor(section.statusTagColor),
+                    }
+                  : undefined
+              }
+            >
+              {section.statusTag}
+            </span>
           ) : null}
           {!expanded && section.collapsedHint ? (
             <span className="accordion-hint"> · {section.collapsedHint}</span>

@@ -1,35 +1,46 @@
 import type { ExpressionSpecification } from 'mapbox-gl'
+import {
+  facilitySuitabilityProperty,
+  type FacilitySuitabilityRating,
+} from '../lib/facilitySuitability'
 
-/** Map paint uses `queue_tier` on merged feature properties (from CSV). */
-export const queueTierProperty = 'queue_tier' as const
+export type { FacilitySuitabilityRating }
 
-export type QueueTier = 'High' | 'Medium' | 'Fair' | 'Low'
-
-export const queueTierColors: Record<QueueTier, string> = {
-  High: '#e11d48',
-  Medium: '#f97316',
+export const facilitySuitabilityColors: Record<
+  FacilitySuitabilityRating,
+  string
+> = {
+  Excellent: '#15803d',
+  Good: '#65a30d',
   Fair: '#eab308',
-  Low: '#22c55e',
+  Poor: '#f97316',
+  Deficient: '#e11d48',
 }
 
-export const queueLegendItems: { tier: QueueTier; label: string }[] = [
-  { tier: 'High', label: 'High priority' },
-  { tier: 'Medium', label: 'Medium priority' },
-  { tier: 'Fair', label: 'Low priority' },
-  { tier: 'Low', label: 'Lowest priority' },
+export const facilitySuitabilityLegendItems: {
+  rating: FacilitySuitabilityRating
+  label: string
+}[] = [
+  { rating: 'Excellent', label: 'Excellent' },
+  { rating: 'Good', label: 'Good' },
+  { rating: 'Fair', label: 'Fair' },
+  { rating: 'Poor', label: 'Poor' },
+  { rating: 'Deficient', label: 'Deficient' },
 ]
 
-/** Mapbox expression for circle fill color from `queue_tier`. */
+/** Mapbox expression for circle fill color from Facility Suitability. */
 export const circleColorExpression: ExpressionSpecification = [
   'match',
-  ['get', queueTierProperty],
-  'High',
-  queueTierColors.High,
-  'Medium',
-  queueTierColors.Medium,
+  ['get', facilitySuitabilityProperty],
+  'Excellent',
+  facilitySuitabilityColors.Excellent,
+  'Good',
+  facilitySuitabilityColors.Good,
   'Fair',
-  queueTierColors.Fair,
-  'Low',
-  queueTierColors.Low,
+  facilitySuitabilityColors.Fair,
+  'Poor',
+  facilitySuitabilityColors.Poor,
+  'Deficient',
+  facilitySuitabilityColors.Deficient,
   '#94a3b8',
 ]

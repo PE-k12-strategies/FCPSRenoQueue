@@ -1,0 +1,74 @@
+.school-view {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: auto;
+  background: var(--shell-bg);
+  background-image:
+    radial-gradient(ellipse 120% 90% at 0% 0%, var(--shell-tint-1), transparent 52%),
+    radial-gradient(ellipse 90% 70% at 100% 100%, var(--shell-tint-2), transparent 48%);
+}
+
+.school-view-dashboard {
+  box-sizing: border-box;
+  min-height: 100%;
+  /* Background stays full-bleed; content sits only to the right of the left pane. */
+  padding: var(--inset-gap);
+  padding-left: calc(var(--main-content-inset, 33%) + var(--inset-gap));
+  /* Room above for the collapsed view toggle; table uses full pane width. */
+  padding-top: max(var(--inset-gap), 3.25rem);
+}
+
+.school-view-header {
+  margin-bottom: 0.85rem;
+  /* Keep title clear of the top-right Map/School toggle without shrinking the table. */
+  padding-right: min(12rem, 28%);
+  max-width: none;
+}
+
+.school-view-kicker {
+  margin: 0 0 0.3rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sidebar-muted);
+}
+
+.school-view-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--sidebar-heading);
+}
+
+.school-view-body {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--sidebar-muted);
+}
+
+.school-view-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 12rem;
+  border: 1px dashed rgba(0, 0, 0, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--sidebar-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .school-view-dashboard {
+    padding-top: 4rem;
+  }
+
+  .school-view-header {
+    padding-right: 0;
+  }
+}
