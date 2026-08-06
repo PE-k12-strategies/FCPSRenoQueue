@@ -106,6 +106,10 @@
   line-height: 1.35;
 }
 
+.school-popup-meta-row:last-child {
+  border-bottom: none;
+}
+
 .school-popup-meta-row dt {
   margin: 0;
   color: var(--sidebar-muted);
