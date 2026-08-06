@@ -13,8 +13,8 @@ param(
 $ErrorActionPreference = 'Stop'
 
 function Get-RemotePath {
-    $url = git remote get-url origin 2>$null
-    if (-not $url) { throw 'No origin remote configured.' }
+    $url = git remote get-url server 2>$null
+    if (-not $url) { throw 'No server remote configured (office network share).' }
     return $url.Trim()
 }
 
@@ -60,13 +60,13 @@ function Invoke-ServerPush {
         throw "Could not resolve commit for branch $Branch."
     }
 
-    Write-Host "Pushing $Branch ($sha) to origin/$Branch ..."
+    Write-Host "Pushing $Branch ($sha) to server/$Branch ..."
 
     Remove-LooseRemoteRef -RemotePath $RemotePath -Branch $Branch
 
     $prevErrorAction = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
-    $pushOutput = git push origin "${Branch}:${Branch}" 2>&1 | Out-String
+    $pushOutput = git push server "${Branch}:${Branch}" 2>&1 | Out-String
     $pushExit = $LASTEXITCODE
     $ErrorActionPreference = $prevErrorAction
 
@@ -85,7 +85,7 @@ function Invoke-ServerPush {
     Write-Host 'Ref lock detected - applying network-share fallback ...'
     Set-RemoteRef -RemotePath $RemotePath -Branch $Branch -Sha $sha
     git -C $RemotePath pack-refs --all --prune 2>$null | Out-Null
-    Write-Host "Updated origin/$Branch via direct ref write."
+    Write-Host "Updated server/$Branch via direct ref write."
 }
 
 if (-not $Branches -or $Branches.Count -eq 0) {
