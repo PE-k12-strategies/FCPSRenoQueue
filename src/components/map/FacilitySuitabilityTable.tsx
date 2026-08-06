@@ -8,6 +8,7 @@ import {
   scoreToFacilitySuitability,
   type FacilitySuitabilityRating,
 } from '../../lib/facilitySuitability'
+import { MetricInfoButton } from '../ui/MetricInfoButton'
 import './FacilitySuitabilityTable.css'
 
 type Props = {
@@ -44,6 +45,42 @@ function CategoryBadge({
   )
 }
 
+function LabelWithInfo({
+  id,
+  label,
+  description,
+  items,
+  as: Tag,
+}: {
+  id?: string
+  label: string
+  description?: string
+  items?: { label: string; description: string }[]
+  as: 'h3' | 'h4' | 'span'
+}) {
+  const className =
+    Tag === 'h3'
+      ? 'fs-table-title'
+      : Tag === 'h4'
+        ? 'fs-card-title'
+        : 'fs-leaf-label'
+
+  return (
+    <div className="fs-label-with-info">
+      <Tag id={id} className={className}>
+        {label}
+      </Tag>
+      {description ? (
+        <MetricInfoButton
+          label={label}
+          description={description}
+          items={items}
+        />
+      ) : null}
+    </div>
+  )
+}
+
 function SubcategoryCard({
   node,
   props,
@@ -57,9 +94,16 @@ function SubcategoryCard({
   return (
     <article className="fs-card" aria-labelledby={`fs-card-${node.id}`}>
       <header className="fs-card-header">
-        <h4 id={`fs-card-${node.id}`} className="fs-card-title">
-          {node.label}
-        </h4>
+        <LabelWithInfo
+          id={`fs-card-${node.id}`}
+          label={node.label}
+          description={node.description}
+          items={leaves.map((leaf) => ({
+            label: leaf.label,
+            description: leaf.description,
+          }))}
+          as="h4"
+        />
         <CategoryBadge category={category} />
       </header>
 
@@ -86,9 +130,12 @@ export function FacilitySuitabilityTable({ properties }: Props) {
   return (
     <section className="fs-table-panel" aria-labelledby="fs-table-heading">
       <header className="fs-table-header">
-        <h3 id="fs-table-heading" className="fs-table-title">
-          {facilitySuitabilityTree.label}
-        </h3>
+        <LabelWithInfo
+          id="fs-table-heading"
+          label={facilitySuitabilityTree.label}
+          description={facilitySuitabilityTree.description}
+          as="h3"
+        />
         <CategoryBadge category={overall} />
       </header>
 

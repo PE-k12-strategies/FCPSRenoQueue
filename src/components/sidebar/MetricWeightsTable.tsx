@@ -6,6 +6,7 @@ import {
   type QueueSubMetricId,
   type QueueSubMetricWeights,
 } from '../../config/queueMetrics'
+import { MetricInfoButton } from '../ui/MetricInfoButton'
 import './MetricWeightsTable.css'
 
 type Props = {
@@ -117,25 +118,35 @@ export function MetricWeightsTable({
               <tr key={row.id} className="metric-weights-block">
                 <td colSpan={2} className="metric-weights-block-cell">
                   <div className="metric-weights-row">
-                    {hasSubs ? (
-                      <button
-                        type="button"
-                        className="metric-weights-expand"
-                        aria-expanded={isOpen}
-                        aria-controls={`metric-subs-${row.id}`}
-                        onClick={() => toggleSub(row.id)}
-                      >
-                        <span className="metric-weights-label">{row.label}</span>
-                        <span
-                          className={`metric-weights-chevron${isOpen ? ' is-open' : ''}`}
-                          aria-hidden
+                    <div className="metric-weights-label-wrap">
+                      {hasSubs ? (
+                        <button
+                          type="button"
+                          className="metric-weights-expand"
+                          aria-expanded={isOpen}
+                          aria-controls={`metric-subs-${row.id}`}
+                          onClick={() => toggleSub(row.id)}
                         >
-                          ▸
-                        </span>
-                      </button>
-                    ) : (
-                      <span className="metric-weights-label">{row.label}</span>
-                    )}
+                          <span className="metric-weights-label">{row.label}</span>
+                          <span
+                            className={`metric-weights-chevron${isOpen ? ' is-open' : ''}`}
+                            aria-hidden
+                          >
+                            ▸
+                          </span>
+                        </button>
+                      ) : (
+                        <span className="metric-weights-label">{row.label}</span>
+                      )}
+                      <MetricInfoButton
+                        label={row.label}
+                        description={row.description}
+                        items={row.subMetrics?.map((sub) => ({
+                          label: sub.label,
+                          description: sub.description,
+                        }))}
+                      />
+                    </div>
                     <PercentControl
                       label={row.label}
                       value={weights[row.id]}

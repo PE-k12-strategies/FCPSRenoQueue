@@ -18,12 +18,25 @@
   background: #fff;
 }
 
+.fs-label-with-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
 .fs-table-title {
   margin: 0;
   font-size: 0.88rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--sidebar-heading);
+}
+
+.fs-leaf-label {
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
 }
 
 .fs-card-grid {
@@ -51,7 +64,8 @@
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   background: #fff;
-  overflow: hidden;
+  /* Keep visible so metric-info popovers are not clipped. */
+  overflow: visible;
 }
 
 .fs-card-header {

@@ -1,3 +1,5 @@
+import { facilitySuitabilityTree } from './facilitySuitabilityTree'
+
 /**
  * Metric sections shown in the school detail popup when a map point is selected.
  */
@@ -26,8 +28,8 @@ export const facilitySuitabilitySubScores = [
 export const schoolMetricSections: SchoolMetricSection[] = [
   {
     id: 'facility-suitability',
-    title: 'Facility Suitability',
-    body: 'Assesses the overall suitability of the school facility for educational programs.',
+    title: facilitySuitabilityTree.label,
+    body: facilitySuitabilityTree.description,
     scoredCategoryKeys: [...facilitySuitabilitySubScores],
   },
   {

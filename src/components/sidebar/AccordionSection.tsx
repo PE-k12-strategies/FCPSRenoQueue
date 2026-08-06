@@ -48,7 +48,10 @@ export function AccordionSection({ section, expanded, onToggle }: Props) {
             <span className="accordion-hint"> · {section.collapsedHint}</span>
           ) : null}
         </span>
-        <span className={`accordion-chevron${expanded ? ' is-open' : ''}`} aria-hidden>
+        <span
+          className={`accordion-chevron${expanded ? ' is-open' : ''}`}
+          aria-hidden
+        >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path
               d="M6 9l6 6 6-6"

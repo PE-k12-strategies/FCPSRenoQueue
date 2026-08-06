@@ -32,34 +32,85 @@ export type QueueSubMetricWeights = {
   facilitiesSuitability: FacilitiesSuitabilityWeights
 }
 
+export type QueueSubMetricRow = {
+  id: QueueSubMetricId
+  label: string
+  description: string
+}
+
 export type QueueMetricRow = {
   id: QueueMetricId
   label: string
-  subMetrics?: { id: QueueSubMetricId; label: string }[]
+  description: string
+  subMetrics?: QueueSubMetricRow[]
 }
 
 export const queueMetricRows: QueueMetricRow[] = [
-  { id: 'campusAge', label: 'Campus Age' },
+  {
+    id: 'campusAge',
+    label: 'Campus Age',
+    description:
+      'How old the campus and its major buildings are, relative to expected service life.',
+  },
   {
     id: 'facilitiesCondition',
     label: 'Facilities Condition',
+    description:
+      'Physical condition of major building systems that affect reliability and maintenance need.',
     subMetrics: [
-      { id: 'mechanical', label: 'Mechanical' },
-      { id: 'electrical', label: 'Electrical' },
-      { id: 'plumbing', label: 'Plumbing' },
-      { id: 'hvac', label: 'HVAC' },
+      {
+        id: 'mechanical',
+        label: 'Mechanical',
+        description: 'Condition of mechanical systems beyond dedicated HVAC equipment.',
+      },
+      {
+        id: 'electrical',
+        label: 'Electrical',
+        description: 'Condition of electrical distribution, panels, and related infrastructure.',
+      },
+      {
+        id: 'plumbing',
+        label: 'Plumbing',
+        description: 'Condition of plumbing systems that support school operations.',
+      },
+      {
+        id: 'hvac',
+        label: 'HVAC',
+        description: 'Condition of heating, ventilation, and air-conditioning systems.',
+      },
     ],
   },
   {
     id: 'facilitiesSuitability',
     label: 'Facilities Suitability',
+    description:
+      'How well the facility supports educational programs through design, space, and adjacency.',
     subMetrics: [
-      { id: 'designFeatures', label: 'Design Features' },
-      { id: 'spaceSufficiency', label: 'Space Sufficiency' },
-      { id: 'programAdjacency', label: 'Program Adjacency' },
+      {
+        id: 'designFeatures',
+        label: 'Design Features',
+        description:
+          'How well classroom and shared spaces support teaching and learning.',
+      },
+      {
+        id: 'spaceSufficiency',
+        label: 'Space Sufficiency',
+        description: 'Whether available space meets program needs by area type.',
+      },
+      {
+        id: 'programAdjacency',
+        label: 'Program Adjacency',
+        description:
+          'How effectively related program areas are located near each other.',
+      },
     ],
   },
-  { id: 'energyUse', label: 'Energy Use' },
+  {
+    id: 'energyUse',
+    label: 'Energy Use',
+    description:
+      'How efficiently the campus uses energy relative to peer facilities and performance targets.',
+  },
 ]
 
 /** Equal starting weights (sum = 100). */

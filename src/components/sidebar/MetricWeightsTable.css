@@ -36,6 +36,14 @@
   padding: 0.35rem 0.1rem;
 }
 
+.metric-weights-label-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .metric-weights-row.is-sub {
   padding: 0.28rem 0.1rem 0.28rem 0.85rem;
 }
@@ -53,6 +61,7 @@
   color: inherit;
   cursor: pointer;
   text-align: left;
+  flex: 0 1 auto;
 }
 
 .metric-weights-expand:focus-visible {
