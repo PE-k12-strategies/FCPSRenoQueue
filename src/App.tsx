@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
+import { PasswordGate } from './components/auth/PasswordGate'
 import { DashboardLayout } from './components/layout/DashboardLayout'
 import { SchoolMap } from './components/map/SchoolMap'
 import type { SelectedSchool } from './components/map/SchoolPopup'
@@ -21,7 +22,7 @@ function queryMatchesSelected(query: string, school: SelectedSchool): boolean {
   return schoolDisplayName(school).toLowerCase().includes(q)
 }
 
-function App() {
+function AppContent() {
   const dataset = useSchoolDataset()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSchool, setSelectedSchool] = useState<SelectedSchool | null>(
@@ -110,6 +111,14 @@ function App() {
         }
       />
     </>
+  )
+}
+
+function App() {
+  return (
+    <PasswordGate>
+      <AppContent />
+    </PasswordGate>
   )
 }
 
