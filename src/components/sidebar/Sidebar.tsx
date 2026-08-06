@@ -131,6 +131,7 @@ export function Sidebar({
             </div>
           </div>
           <p className="sidebar-intro">{appConfig.intro}</p>
+          <p className="sidebar-intro-note">{appConfig.introNote}</p>
         </header>
 
         <div className="sidebar-search-label" ref={searchWrapRef}>
@@ -276,7 +277,7 @@ export function Sidebar({
           </h2>
           <p className="sidebar-section-copy">
             Adjust how each metric contributes to the renovation queue. Expand a
-            metric to set its submetric weights.
+            metric to set its submetric and adjust its weights.
           </p>
           <MetricWeightsTable
             weights={weights}

@@ -27,7 +27,7 @@ export const schoolMetricSections: SchoolMetricSection[] = [
   {
     id: 'facility-suitability',
     title: 'Facility Suitability',
-    body: 'Submetrics categorized with the same rubric as overall Facility Suitability.',
+    body: 'Assesses the overall suitability of the school facility for educational programs.',
     scoredCategoryKeys: [...facilitySuitabilitySubScores],
   },
   {

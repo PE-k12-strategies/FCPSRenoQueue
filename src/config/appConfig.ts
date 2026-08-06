@@ -10,5 +10,7 @@ export const appConfig = {
   footerLogoAlt: 'Perkins Eastman',
   title: 'Fairfax County Public Schools: Renovation Queue Criteria',
   intro:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
+    "This dashboard shows the metrics behind each school's place in the district's renovation queue intended to give a clear, transparent view of how priorities are set.",
+  introNote:
+    'Note: This is a DRAFT webtool, the data and functionality is intended only for internal review.',
 } as const

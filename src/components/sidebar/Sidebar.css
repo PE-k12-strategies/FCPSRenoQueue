@@ -108,6 +108,17 @@
   color: var(--sidebar-muted);
 }
 
+.sidebar-intro-note {
+  margin: 0.65rem 0 0;
+  padding: 0.45rem 0.55rem;
+  border-left: 3px solid var(--sidebar-heading);
+  background: rgba(0, 0, 0, 0.05);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--sidebar-heading);
+}
+
 .sidebar-search-label {
   display: block;
   position: relative;
