@@ -25,7 +25,7 @@ export const facilitySuitabilityTree: SuitabilityMetricNode = {
       label: 'Design Features',
       field: 'DF_Score',
       description:
-        'How well classroom and shared spaces support teaching and learning.',
+        'How the amenities and design of spaces in a school support teaching and learning.',
       children: [
         {
           id: 'classroom',
@@ -43,20 +43,23 @@ export const facilitySuitabilityTree: SuitabilityMetricNode = {
           id: 'assembly',
           label: 'Assembly',
           field: 'Assembly Score Weighted',
-          description: 'Capacity and quality of gathering / assembly spaces.',
+          description:
+            'Quality and adequacy of gathering and assembly spaces like cafeterias or gymnasiums.',
         },
         {
           id: 'extended-learning',
           label: 'Extended Learning',
           field: 'Extended Learning Score Weighted',
-          description: 'Spaces that support learning beyond the classroom.',
+          description:
+            'Quality and adequacy of spaces used for instruction beyond the classroom.',
         },
         {
-          id: 'environmental-scores',
-          label: 'Environmental Scores',
+          id: 'community',
+          label: 'Community',
+          // Column G in the published FS CSV.
           field: 'Community Score Weighted',
           description:
-            'Community and environmental quality factors tied to design features.',
+            'How well spaces in the school support a sense of community and create a safe secure environment.',
         },
       ],
     },
@@ -71,13 +74,15 @@ export const facilitySuitabilityTree: SuitabilityMetricNode = {
           id: 'student-support',
           label: 'Student Support',
           field: 'Student Support Score',
-          description: 'Access and adjacency of student support services.',
+          description:
+            'Adjacency of spaces used by students and staff throughout the school day for non-classroom activities — such as the cafeteria, gymnasium, and wellness or counseling spaces — ensuring these shared spaces are easily and safely accessible during transitions, meals, and breaks.',
         },
         {
           id: 'curriculum-support',
           label: 'Curriculum Support',
           field: 'Curriculum Support',
-          description: 'Adjacency of spaces that support curriculum delivery.',
+          description:
+            'Adjacency of spaces used for direct instruction and the spaces that support it — such as classrooms, labs, resource rooms, so that teaching and its supporting functions are located close enough to work together efficiently.',
         },
       ],
     },
@@ -85,26 +90,28 @@ export const facilitySuitabilityTree: SuitabilityMetricNode = {
       id: 'space-sufficiency',
       label: 'Space Sufficiency',
       field: 'SS_Score',
-      description: 'Whether available space meets program needs by area type.',
+      description:
+        'Whether a school has sufficient space to support the students and staff.',
       children: [
         {
           id: 'overall-building',
           label: 'Overall Building',
           // CSV score kept as `Building SF Score` when GeoJSON owns `Building SF`.
           field: 'Building SF Score',
-          description: 'Overall building area sufficiency relative to need.',
+          description: 'Overall size of the school building.',
         },
         {
           id: 'administration',
           label: 'Administration',
           field: 'Admin',
-          description: 'Administrative space sufficiency.',
+          description:
+            'Includes spaces like the main office, teachers work room, health space.',
         },
         {
           id: 'ss-classroom',
           label: 'Classroom',
           field: 'Avg Class SF',
-          description: 'Typical classroom size sufficiency.',
+          description: 'Typical size of classroom.',
         },
         {
           id: 'gymnasium',
@@ -116,13 +123,15 @@ export const facilitySuitabilityTree: SuitabilityMetricNode = {
           id: 'support-spaces',
           label: 'Support Spaces',
           field: 'Support',
-          description: 'Core support space sufficiency.',
+          description:
+            'Includes spaces like cafeterias, library, school aged child care.',
         },
         {
           id: 'supplemental-spaces',
           label: 'Supplemental Spaces',
           field: 'Suppl',
-          description: 'Supplemental program space sufficiency.',
+          description:
+            'Includes spaces like science labs, music rooms, art room.',
         },
       ],
     },

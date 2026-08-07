@@ -90,12 +90,13 @@ export const queueMetricRows: QueueMetricRow[] = [
         id: 'designFeatures',
         label: 'Design Features',
         description:
-          'How well classroom and shared spaces support teaching and learning.',
+          'How the amenities and design of spaces in a school support teaching and learning.',
       },
       {
         id: 'spaceSufficiency',
         label: 'Space Sufficiency',
-        description: 'Whether available space meets program needs by area type.',
+        description:
+          'Whether a school has sufficient space to support the students and staff.',
       },
       {
         id: 'programAdjacency',
