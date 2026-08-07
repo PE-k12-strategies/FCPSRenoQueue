@@ -47,7 +47,8 @@ export function summarizeFacilitySuitability(
       rating === 'Poor' ||
       rating === 'Deficient'
     ) {
-      counts[rating] += 1
+      const key: FacilitySuitabilityRating = rating
+      counts[key] += 1
       ratedCount += 1
     }
   }

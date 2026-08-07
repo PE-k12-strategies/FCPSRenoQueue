@@ -4,7 +4,7 @@ import Map, {
   Layer,
   NavigationControl,
   Source,
-  type MapLayerMouseEvent,
+  type MapMouseEvent,
   type MapRef,
 } from 'react-map-gl/mapbox'
 import 'mapbox-gl/dist/mapbox-gl.css'
@@ -231,12 +231,12 @@ export function SchoolMap({
     })
   }, [selectedSchool, data, viewMode])
 
-  const onMouseMove = useCallback((e: MapLayerMouseEvent) => {
+  const onMouseMove = useCallback((e: MapMouseEvent) => {
     setCursor(e.features && e.features.length > 0 ? 'pointer' : 'default')
   }, [])
 
   const onClick = useCallback(
-    (e: MapLayerMouseEvent) => {
+    (e: MapMouseEvent) => {
       const feature = e.features?.[0]
       if (!feature?.properties) {
         onSelectSchool(null)

@@ -63,8 +63,14 @@ export function DashboardLayout({ sidebar, map }: Props) {
         id="school-dashboard-split"
         className="dashboard-group"
         defaultLayout={defaultLayout}
-        onLayoutChanged={(layout) => {
-          onLayoutChanged(layout)
+        onLayoutChanged={(layout, ...rest) => {
+          // Newer react-resizable-panels passes a meta second arg; forward it.
+          ;(
+            onLayoutChanged as (
+              nextLayout: typeof layout,
+              ...args: unknown[]
+            ) => void
+          )(layout, ...rest)
           // Keep dashboard content aligned after drag-resize.
           const shell = shellRef.current
           const panel = shell?.querySelector<HTMLElement>(

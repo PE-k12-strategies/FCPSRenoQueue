@@ -49,7 +49,10 @@ function AppContent() {
     if (suitabilityFilter) {
       return `Highlighting ${suitabilityFilter} facility suitability on the map.`
     }
-    return `Loaded ${dataset.data.geojson.features.length} school sites.`
+    if (dataset.status === 'ready') {
+      return `Loaded ${dataset.data.geojson.features.length} school sites.`
+    }
+    return 'Loading school site data…'
   }, [dataset, selectedSchool, suitabilityFilter])
 
   const onSearchChange = (q: string) => {
