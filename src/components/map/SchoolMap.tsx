@@ -22,13 +22,20 @@ import {
 } from '../../lib/facilitySuitability'
 import type { SchoolFeatureCollection } from '../../types/data'
 import { MapLegend, type BasemapMode, type ViewMode } from './MapLegend'
-import { SchoolPopup, type SelectedSchool } from './SchoolPopup'
+import {
+  RegionPopup,
+  SchoolPopup,
+  type SelectedSchool,
+} from './SchoolPopup'
 import { SchoolView } from './SchoolView'
 import './SchoolMap.css'
 
 const MAP_STYLE_LIGHT = 'mapbox://styles/mapbox/light-v11'
 const MAP_STYLE_SATELLITE = 'mapbox://styles/mapbox/satellite-streets-v12'
 const SCHOOL_LAYER_ID = 'school-sites-circle'
+const REGION_FILL_LAYER_ID = 'school-regions-fill'
+const REGION_LINE_LAYER_ID = 'school-regions-line'
+const SCHOOL_REGIONS_URL = '/data/FCPS_School_Regions.geojson'
 
 /** Same stack as `:root --font` in `index.html` / `index.css` (Mapbox glyph override). */
 const MAP_LABEL_FONT_FAMILY =
@@ -49,6 +56,19 @@ function schoolIdFromProps(props: Record<string, unknown> | null | undefined) {
   return id == null ? '' : String(id)
 }
 
+function regionNameFromProps(props: Record<string, unknown> | null | undefined) {
+  if (!props) return 'SCHOOL REGION: —'
+  const region = props.REGION
+  if (region == null || region === '') return 'SCHOOL REGION: —'
+  return `SCHOOL REGION: ${region}`
+}
+
+type SelectedRegion = {
+  name: string
+  x: number
+  y: number
+}
+
 export function SchoolMap({
   data,
   searchQuery,
@@ -63,6 +83,9 @@ export function SchoolMap({
   const [basemap, setBasemap] = useState<BasemapMode>('light')
   const [mapMetric, setMapMetric] = useState<MapMetricId>(defaultMapMetricId)
   const [cursor, setCursor] = useState<'default' | 'pointer'>('default')
+  const [selectedRegion, setSelectedRegion] = useState<SelectedRegion | null>(
+    null,
+  )
   const mapStyle =
     basemap === 'satellite' ? MAP_STYLE_SATELLITE : MAP_STYLE_LIGHT
   const activeMetric = getMapMetric(mapMetric)
@@ -237,28 +260,47 @@ export function SchoolMap({
 
   const onClick = useCallback(
     (e: MapMouseEvent) => {
-      const feature = e.features?.[0]
-      if (!feature?.properties) {
-        onSelectSchool(null)
+      const features = e.features ?? []
+      const schoolFeature = features.find((f) => f.layer?.id === SCHOOL_LAYER_ID)
+      if (schoolFeature?.properties) {
+        setSelectedRegion(null)
+        const clickedProps = schoolFeature.properties as Record<string, unknown>
+        const id = schoolIdFromProps(clickedProps)
+        if (!id) {
+          onSelectSchool(null)
+          return
+        }
+        // Prefer full joined feature props (Mapbox may stringify/truncate).
+        const fromData = data?.features.find(
+          (f) =>
+            schoolIdFromProps(f.properties as Record<string, unknown>) === id,
+        )
+        onSelectSchool({
+          id,
+          properties:
+            (fromData?.properties as Record<string, unknown> | null) ??
+            clickedProps,
+        })
         return
       }
-      const clickedProps = feature.properties as Record<string, unknown>
-      const id = schoolIdFromProps(clickedProps)
-      if (!id) {
-        onSelectSchool(null)
-        return
-      }
-      // Prefer full joined feature props (Mapbox may stringify/truncate).
-      const fromData = data?.features.find(
-        (f) =>
-          schoolIdFromProps(f.properties as Record<string, unknown>) === id,
+
+      const regionFeature = features.find(
+        (f) => f.layer?.id === REGION_FILL_LAYER_ID,
       )
-      onSelectSchool({
-        id,
-        properties:
-          (fromData?.properties as Record<string, unknown> | null) ??
-          clickedProps,
-      })
+      if (regionFeature?.properties) {
+        onSelectSchool(null)
+        setSelectedRegion({
+          name: regionNameFromProps(
+            regionFeature.properties as Record<string, unknown>,
+          ),
+          x: e.point.x,
+          y: e.point.y,
+        })
+        return
+      }
+
+      setSelectedRegion(null)
+      onSelectSchool(null)
     },
     [onSelectSchool, data],
   )
@@ -343,7 +385,7 @@ export function SchoolMap({
           preserveDrawingBuffer
           fadeDuration={0}
           cursor={cursor}
-          interactiveLayerIds={[SCHOOL_LAYER_ID]}
+          interactiveLayerIds={[SCHOOL_LAYER_ID, REGION_FILL_LAYER_ID]}
           onMouseMove={onMouseMove}
           onClick={onClick}
           onLoad={() => {
@@ -351,6 +393,41 @@ export function SchoolMap({
           }}
         >
           <NavigationControl position="bottom-right" showCompass={false} />
+          <Source id="school-regions" type="geojson" data={SCHOOL_REGIONS_URL}>
+            <Layer
+              id={REGION_FILL_LAYER_ID}
+              type="fill"
+              paint={{
+                'fill-color': [
+                  'match',
+                  ['to-number', ['get', 'REGION']],
+                  1,
+                  '#93c5fd',
+                  2,
+                  '#86efac',
+                  3,
+                  '#fcd34d',
+                  4,
+                  '#fda4af',
+                  5,
+                  '#c4b5fd',
+                  6,
+                  '#fdba74',
+                  '#cbd5e1',
+                ],
+                'fill-opacity': 0.28,
+              }}
+            />
+            <Layer
+              id={REGION_LINE_LAYER_ID}
+              type="line"
+              paint={{
+                'line-color': '#475569',
+                'line-width': 1.25,
+                'line-opacity': 0.75,
+              }}
+            />
+          </Source>
           <Source id="school-sites" type="geojson" data={displayData}>
             <Layer
               id={SCHOOL_LAYER_ID}
@@ -359,8 +436,8 @@ export function SchoolMap({
                 'circle-radius': [
                   'case',
                   ['==', ['to-string', ['get', 'FCPS_School ID']], selectedId],
+                  9,
                   7,
-                  5,
                 ],
                 'circle-color': activeMetric.colorExpression,
                 'circle-stroke-width': [
@@ -384,6 +461,13 @@ export function SchoolMap({
         <SchoolPopup
           school={selectedSchool}
           onClose={() => onSelectSchool(null)}
+        />
+      ) : selectedRegion ? (
+        <RegionPopup
+          name={selectedRegion.name}
+          x={selectedRegion.x}
+          y={selectedRegion.y}
+          onClose={() => setSelectedRegion(null)}
         />
       ) : null}
     </div>

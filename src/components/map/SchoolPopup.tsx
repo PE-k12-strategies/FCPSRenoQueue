@@ -1,4 +1,4 @@
-import { useCallback, useId, useState } from 'react'
+import { useCallback, useId, useLayoutEffect, useState } from 'react'
 import { facilitySuitabilityColors } from '../../config/legend'
 import {
   schoolDisplayFields,
@@ -176,6 +176,87 @@ export function SchoolPopup({ school, onClose }: Props) {
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+type RegionPopupProps = {
+  name: string
+  x: number
+  y: number
+  onClose: () => void
+}
+
+export function RegionPopup({ name, x, y, onClose }: RegionPopupProps) {
+  const titleId = useId()
+  const handleClose = useCallback(() => onClose(), [onClose])
+  const dialogRef = useDialogFocus(true, handleClose)
+  const [anchor, setAnchor] = useState({ left: x, top: y })
+
+  useLayoutEffect(() => {
+    const el = dialogRef.current
+    const parent = el?.offsetParent
+    if (!(el instanceof HTMLElement) || !(parent instanceof HTMLElement)) {
+      setAnchor({ left: x, top: y })
+      return
+    }
+
+    const pad = 10
+    const gap = 12
+    const w = el.offsetWidth
+    const h = el.offsetHeight
+    const pw = parent.clientWidth
+    const ph = parent.clientHeight
+
+    // Prefer above the click; flip below if there isn’t room.
+    let top = y - gap
+    let placeBelow = false
+    if (top - h < pad) {
+      top = y + gap
+      placeBelow = true
+    }
+    if (!placeBelow && top > ph - pad) top = ph - pad
+    if (placeBelow && top + h > ph - pad) top = Math.max(pad + h, ph - pad)
+
+    let left = x
+    const half = w / 2
+    if (left - half < pad) left = pad + half
+    if (left + half > pw - pad) left = pw - pad - half
+
+    el.dataset.placement = placeBelow ? 'below' : 'above'
+    setAnchor({ left, top })
+  }, [dialogRef, x, y, name])
+
+  return (
+    <div
+      ref={dialogRef}
+      className="school-popup school-popup--region"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      tabIndex={-1}
+      style={{ left: anchor.left, top: anchor.top }}
+    >
+      <header className="school-popup-header school-popup-header--region">
+        <h2 id={titleId} className="school-popup-title school-popup-title--region">
+          {name}
+        </h2>
+        <button
+          type="button"
+          className="school-popup-close"
+          onClick={handleClose}
+          aria-label="Close region details"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path
+              d="M6 6l12 12M18 6L6 18"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+      </header>
     </div>
   )
 }

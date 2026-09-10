@@ -18,6 +18,21 @@
   pointer-events: auto;
 }
 
+.school-popup--region {
+  left: 0;
+  right: auto;
+  top: 0;
+  bottom: auto;
+  width: max-content;
+  max-width: calc(100% - 28px);
+  max-height: none;
+  transform: translate(-50%, -100%);
+}
+
+.school-popup--region[data-placement='below'] {
+  transform: translate(-50%, 0);
+}
+
 .school-popup-header {
   flex-shrink: 0;
   display: flex;
@@ -26,6 +41,13 @@
   gap: 0.5rem;
   padding: 0.65rem 0.75rem 0.5rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.school-popup-header--region {
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.45rem 0.45rem 0.7rem;
+  border-bottom: none;
 }
 
 .school-popup-heading {
@@ -48,6 +70,13 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--sidebar-heading);
+}
+
+.school-popup-title--region {
+  white-space: nowrap;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .school-popup-close {

@@ -56,7 +56,6 @@ export const facilitySuitabilityTree: SuitabilityMetricNode = {
         {
           id: 'community',
           label: 'Community',
-          // Column G in the published FS CSV.
           field: 'Community Score Weighted',
           description:
             'How well spaces in the school support a sense of community and create a safe secure environment.',
