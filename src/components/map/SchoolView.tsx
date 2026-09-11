@@ -35,15 +35,11 @@ function propString(
  */
 export function SchoolView({ school }: Props) {
   const detailRows = school
-    ? schoolViewDetailFields
-        .map(({ key, label }) => {
-          const value = propString(school.properties, key)
-          if (value == null) return null
-          return { key, label, value }
-        })
-        .filter((row): row is { key: string; label: string; value: string } =>
-          row != null,
-        )
+    ? schoolViewDetailFields.flatMap(({ key, label }) => {
+        const value = propString(school.properties, key)
+        if (value == null) return []
+        return [{ key, label, value }]
+      })
     : []
 
   return (
