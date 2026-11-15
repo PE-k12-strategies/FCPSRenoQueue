@@ -16,5 +16,10 @@ export const dataConfig = {
       url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRoJ6plKFDrlLPEzBFzY32k2YokTNMhzq1DU6hVJHx5VC37LRQlHtyx3xX4YKwsHTsBt0wz25Srnrqp/pub?gid=1730185827&single=true&output=csv',
       key: 'fsData',
     },
+    {
+      /** Adopted CIP FY2027–31 capacity / enrollment (local copy under public/data). */
+      url: '/data/FCPS_Capacity_CIP_FY2027-31.csv',
+      key: 'capacityData',
+    },
   ] as const,
 } as const

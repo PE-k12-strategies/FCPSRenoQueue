@@ -1,7 +1,8 @@
 /**
  * Hierarchical Facility Suitability metrics for School View.
- * Field keys match `FCPS_FS_Data.csv` columns; values are shown as categories
- * using the same breakpoints as overall Facility Suitability.
+ * Field keys match `FCPS_FS_Data.csv` columns. Overall FS_Score uses priority
+ * labels; Design Features / Program Adjacency / Space Sufficiency use
+ * Good–Deficient bands with the same breakpoints and colors.
  */
 export type SuitabilityMetricNode = {
   id: string

@@ -1,4 +1,7 @@
-import { facilitySuitabilityColors } from '../../config/legend'
+import {
+  facilitySuitabilityColors,
+  type SuitabilityColorKey,
+} from '../../config/legend'
 import {
   facilitySuitabilityTree,
   type SuitabilityMetricNode,
@@ -6,7 +9,7 @@ import {
 import {
   parseFsScore,
   scoreToFacilitySuitability,
-  type FacilitySuitabilityRating,
+  scoreToFacilitySuitabilityBand,
 } from '../../lib/facilitySuitability'
 import { MetricInfoButton } from '../ui/MetricInfoButton'
 import './FacilitySuitabilityTable.css'
@@ -19,19 +22,28 @@ function badgeTextColor(fill: string): string {
   return fill === facilitySuitabilityColors.Fair ? '#422006' : '#ffffff'
 }
 
-function categoryFor(
+function overallCategoryFor(
   props: Record<string, unknown>,
   field: string,
-): FacilitySuitabilityRating | null {
+): SuitabilityColorKey | null {
   const score = parseFsScore(props[field])
   if (score == null) return null
   return scoreToFacilitySuitability(score)
 }
 
+function bandCategoryFor(
+  props: Record<string, unknown>,
+  field: string,
+): SuitabilityColorKey | null {
+  const score = parseFsScore(props[field])
+  if (score == null) return null
+  return scoreToFacilitySuitabilityBand(score)
+}
+
 function CategoryBadge({
   category,
 }: {
-  category: FacilitySuitabilityRating | null
+  category: SuitabilityColorKey | null
 }) {
   if (!category) return <span className="fs-table-na">—</span>
   const color = facilitySuitabilityColors[category]
@@ -88,7 +100,7 @@ function SubcategoryCard({
   node: SuitabilityMetricNode
   props: Record<string, unknown>
 }) {
-  const category = categoryFor(props, node.field)
+  const category = bandCategoryFor(props, node.field)
   const leaves = node.children ?? []
 
   return (
@@ -113,7 +125,7 @@ function SubcategoryCard({
             <tr key={leaf.id} className="fs-table-row">
               <th scope="row">{leaf.label}</th>
               <td>
-                <CategoryBadge category={categoryFor(props, leaf.field)} />
+                <CategoryBadge category={bandCategoryFor(props, leaf.field)} />
               </td>
             </tr>
           ))}
@@ -124,7 +136,7 @@ function SubcategoryCard({
 }
 
 export function FacilitySuitabilityTable({ properties }: Props) {
-  const overall = categoryFor(properties, facilitySuitabilityTree.field)
+  const overall = overallCategoryFor(properties, facilitySuitabilityTree.field)
   const subcategories = facilitySuitabilityTree.children ?? []
 
   return (

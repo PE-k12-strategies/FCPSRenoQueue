@@ -6,6 +6,10 @@ import type { SelectedSchool } from './components/map/SchoolPopup'
 import { Sidebar } from './components/sidebar/Sidebar'
 import { useSchoolDataset } from './hooks/useSchoolDataset'
 import {
+  capacityUtilizationProperty,
+  type CapacityUtilizationRating,
+} from './lib/capacityUtilization'
+import {
   facilitySuitabilityProperty,
   type FacilitySuitabilityRating,
 } from './lib/facilitySuitability'
@@ -30,6 +34,8 @@ function AppContent() {
   )
   const [suitabilityFilter, setSuitabilityFilter] =
     useState<FacilitySuitabilityRating | null>(null)
+  const [capacityFilter, setCapacityFilter] =
+    useState<CapacityUtilizationRating | null>(null)
 
   const geojson = dataset.status === 'ready' ? dataset.data.geojson : null
 
@@ -49,11 +55,14 @@ function AppContent() {
     if (suitabilityFilter) {
       return `Highlighting ${suitabilityFilter} facility suitability on the map.`
     }
+    if (capacityFilter) {
+      return `Highlighting ${capacityFilter} capacity utilization on the map.`
+    }
     if (dataset.status === 'ready') {
       return `Loaded ${dataset.data.geojson.features.length} school sites.`
     }
     return 'Loading school site data…'
-  }, [dataset, selectedSchool, suitabilityFilter])
+  }, [dataset, selectedSchool, suitabilityFilter, capacityFilter])
 
   const onSearchChange = (q: string) => {
     setSearchQuery(q)
@@ -67,10 +76,25 @@ function AppContent() {
     rating: FacilitySuitabilityRating | null,
   ) => {
     setSuitabilityFilter(rating)
+    if (rating) setCapacityFilter(null)
     if (
       selectedSchool &&
       rating &&
       selectedSchool.properties[facilitySuitabilityProperty] !== rating
+    ) {
+      selectSchool(null)
+    }
+  }
+
+  const onCapacityFilterChange = (
+    rating: CapacityUtilizationRating | null,
+  ) => {
+    setCapacityFilter(rating)
+    if (rating) setSuitabilityFilter(null)
+    if (
+      selectedSchool &&
+      rating &&
+      selectedSchool.properties[capacityUtilizationProperty] !== rating
     ) {
       selectSchool(null)
     }
@@ -94,6 +118,8 @@ function AppContent() {
             schoolData={geojson}
             suitabilityFilter={suitabilityFilter}
             onSuitabilityFilterChange={onSuitabilityFilterChange}
+            capacityFilter={capacityFilter}
+            onCapacityFilterChange={onCapacityFilterChange}
           />
         }
         map={
@@ -107,6 +133,7 @@ function AppContent() {
               data={geojson}
               searchQuery={searchQuery}
               suitabilityFilter={suitabilityFilter}
+              capacityFilter={capacityFilter}
               selectedSchool={selectedSchool}
               onSelectSchool={selectSchool}
             />

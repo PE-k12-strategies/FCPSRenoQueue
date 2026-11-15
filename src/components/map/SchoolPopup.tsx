@@ -1,13 +1,20 @@
 import { useCallback, useId, useLayoutEffect, useState } from 'react'
-import { facilitySuitabilityColors } from '../../config/legend'
+import {
+  capacityUtilizationColors,
+  facilitySuitabilityColors,
+  type SuitabilityColorKey,
+} from '../../config/legend'
 import {
   schoolDisplayFields,
   schoolMetricSections,
 } from '../../config/schoolMetrics'
 import {
+  capacityUtilizationProperty,
+  type CapacityUtilizationRating,
+} from '../../lib/capacityUtilization'
+import {
   parseFsScore,
-  scoreToFacilitySuitability,
-  type FacilitySuitabilityRating,
+  scoreToFacilitySuitabilityBand,
 } from '../../lib/facilitySuitability'
 import { useDialogFocus } from '../../hooks/useDialogFocus'
 import { AccordionSection } from '../sidebar/AccordionSection'
@@ -17,7 +24,10 @@ import './SchoolPopup.css'
 function ratingColor(rating: string | undefined): string | undefined {
   if (!rating) return undefined
   if (rating in facilitySuitabilityColors) {
-    return facilitySuitabilityColors[rating as FacilitySuitabilityRating]
+    return facilitySuitabilityColors[rating as SuitabilityColorKey]
+  }
+  if (rating in capacityUtilizationColors) {
+    return capacityUtilizationColors[rating as CapacityUtilizationRating]
   }
   return undefined
 }
@@ -43,6 +53,15 @@ function propString(
   return s
 }
 
+/** Format CIP utilization ratios (0–1 or 0–100) as whole-number percents. */
+function formatCapacityValue(key: string, raw: string): string {
+  if (!/utilization/i.test(key)) return raw
+  const n = Number(raw)
+  if (!Number.isFinite(n)) return raw
+  const pct = n <= 1.5 ? n * 100 : n
+  return `${Math.round(pct)}%`
+}
+
 function buildMetricSection(
   section: (typeof schoolMetricSections)[number],
   props: Record<string, unknown>,
@@ -53,11 +72,33 @@ function buildMetricSection(
     for (const { key, label } of section.scoredCategoryKeys) {
       const score = parseFsScore(props[key])
       if (score == null) continue
-      const category = scoreToFacilitySuitability(score)
+      const category = scoreToFacilitySuitabilityBand(score)
       rows.push({
         label,
         value: category,
         color: ratingColor(category),
+      })
+    }
+  }
+
+  if (section.id === 'capacity') {
+    const utilCategory = propString(props, capacityUtilizationProperty)
+    if (utilCategory != null) {
+      rows.push({
+        label: 'Utilization Category',
+        value: utilCategory,
+        color: ratingColor(utilCategory),
+      })
+    }
+  }
+
+  if (section.displayFields) {
+    for (const { key, label } of section.displayFields) {
+      const raw = propString(props, key)
+      if (raw == null) continue
+      rows.push({
+        label,
+        value: formatCapacityValue(key, raw),
       })
     }
   }
@@ -80,7 +121,9 @@ function buildMetricSection(
   const statusTag =
     section.id === 'facility-suitability'
       ? propString(props, 'facility_suitability')
-      : undefined
+      : section.id === 'capacity'
+        ? propString(props, capacityUtilizationProperty)
+        : undefined
 
   return {
     id: section.id,

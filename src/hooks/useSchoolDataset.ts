@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { dataConfig } from '../config/dataConfig'
+import { assignCapacityUtilization } from '../lib/capacityUtilization'
 import { assignFacilitySuitability } from '../lib/facilitySuitability'
 import { fetchText } from '../lib/fetchText'
 import { joinGeoJsonWithCsv } from '../lib/joinGeoJsonWithCsv'
@@ -58,13 +59,15 @@ export function useSchoolDataset(): LoadState {
           dataConfig.geoJsonIdField,
           dataConfig.csvIdField,
         )
-        const withSuitability = {
+        const enriched = {
           ...joined,
-          geojson: assignFacilitySuitability(joined.geojson),
+          geojson: assignCapacityUtilization(
+            assignFacilitySuitability(joined.geojson),
+          ),
         }
 
         if (!cancelled) {
-          setState({ status: 'ready', data: withSuitability })
+          setState({ status: 'ready', data: enriched })
         }
       } catch (e) {
         if (!cancelled) {

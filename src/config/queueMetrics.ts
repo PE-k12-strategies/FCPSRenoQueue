@@ -3,7 +3,9 @@ export type QueueMetricId =
   | 'campusAge'
   | 'facilitiesCondition'
   | 'facilitiesSuitability'
-  | 'energyUse'
+  | 'relocatables'
+  | 'equity'
+  | 'capacity'
 
 export type FacilitiesConditionSubId =
   | 'mechanical'
@@ -107,19 +109,33 @@ export const queueMetricRows: QueueMetricRow[] = [
     ],
   },
   {
-    id: 'energyUse',
-    label: 'Energy Use',
+    id: 'relocatables',
+    label: 'Relocatables',
     description:
-      'How efficiently the campus uses energy relative to peer facilities and performance targets.',
+      'Reliance on relocatable (portable) classrooms relative to permanent instructional space.',
+  },
+  {
+    id: 'equity',
+    label: 'Equity',
+    description:
+      'How equitably facility conditions and resources are distributed across the school community.',
+  },
+  {
+    id: 'capacity',
+    label: 'Capacity',
+    description:
+      'How well current enrollment fits design and program capacity (Adopted CIP FY2027–31).',
   },
 ]
 
-/** Equal starting weights (sum = 100). */
+/** Default starting weights (sum = 100). */
 export const defaultQueueMetricWeights: QueueMetricWeights = {
-  campusAge: 25,
-  facilitiesCondition: 25,
-  facilitiesSuitability: 25,
-  energyUse: 25,
+  campusAge: 5,
+  facilitiesCondition: 40,
+  facilitiesSuitability: 20,
+  relocatables: 10,
+  equity: 15,
+  capacity: 10,
 }
 
 export const defaultQueueSubMetricWeights: QueueSubMetricWeights = {

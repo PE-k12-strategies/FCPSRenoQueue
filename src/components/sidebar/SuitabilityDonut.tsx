@@ -1,14 +1,21 @@
 import { useMemo } from 'react'
-import { facilitySuitabilityColors } from '../../config/legend'
-import type { SuitabilityBreakdownRow } from '../../lib/districtOverview'
-import type { FacilitySuitabilityRating } from '../../lib/facilitySuitability'
 import './SuitabilityDonut.css'
 
-type Props = {
-  rows: SuitabilityBreakdownRow[]
+export type MetricBreakdownRow<T extends string = string> = {
+  rating: T
+  count: number
+  percent: number
+}
+
+type Props<T extends string> = {
+  rows: MetricBreakdownRow<T>[]
   ratedCount: number
-  selectedRating: FacilitySuitabilityRating | null
-  onSelectRating: (rating: FacilitySuitabilityRating | null) => void
+  selectedRating: T | null
+  onSelectRating: (rating: T | null) => void
+  colors: Record<T, string>
+  chartTitle: string
+  groupAriaLabel: string
+  legendAriaLabel: string
 }
 
 const SIZE = 180
@@ -41,12 +48,16 @@ function donutSlice(startAngle: number, endAngle: number): string {
   ].join(' ')
 }
 
-export function SuitabilityDonut({
+export function SuitabilityDonut<T extends string>({
   rows,
   ratedCount,
   selectedRating,
   onSelectRating,
-}: Props) {
+  colors,
+  chartTitle,
+  groupAriaLabel,
+  legendAriaLabel,
+}: Props<T>) {
   const slices = useMemo(() => {
     const active = rows.filter((row) => row.count > 0)
     if (active.length === 0) return []
@@ -62,7 +73,7 @@ export function SuitabilityDonut({
     })
   }, [rows, ratedCount])
 
-  const toggleRating = (rating: FacilitySuitabilityRating) => {
+  const toggleRating = (rating: T) => {
     onSelectRating(selectedRating === rating ? null : rating)
   }
 
@@ -90,14 +101,14 @@ export function SuitabilityDonut({
       <div
         className="suitability-donut-chart"
         role="group"
-        aria-label="Filter map by facility suitability. Activate a segment or legend row to filter."
+        aria-label={groupAriaLabel}
       >
         <svg
           className="suitability-donut-svg"
           viewBox={`0 0 ${SIZE} ${SIZE}`}
           aria-hidden
         >
-          <title>Facilities Suitability by school count</title>
+          <title>{chartTitle}</title>
           <desc>{chartSummary}</desc>
           {slices.map(({ row, path }) => {
             const isSelected = selectedRating === row.rating
@@ -106,7 +117,7 @@ export function SuitabilityDonut({
               <path
                 key={row.rating}
                 d={path}
-                fill={facilitySuitabilityColors[row.rating]}
+                fill={colors[row.rating]}
                 className={
                   isDimmed
                     ? 'suitability-donut-slice is-dimmed'
@@ -167,7 +178,7 @@ export function SuitabilityDonut({
         </p>
       )}
 
-      <ul className="suitability-donut-legend" aria-label="Suitability breakdown">
+      <ul className="suitability-donut-legend" aria-label={legendAriaLabel}>
         {rows.map((row) => {
           const isSelected = selectedRating === row.rating
           const isDimmed = selectedRating != null && !isSelected
@@ -188,7 +199,7 @@ export function SuitabilityDonut({
               >
                 <span
                   className="suitability-donut-swatch"
-                  style={{ background: facilitySuitabilityColors[row.rating] }}
+                  style={{ background: colors[row.rating] }}
                   aria-hidden
                 />
                 <span className="suitability-donut-legend-name">

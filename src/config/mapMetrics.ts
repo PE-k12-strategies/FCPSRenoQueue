@@ -1,12 +1,15 @@
 import type { ExpressionSpecification } from 'mapbox-gl'
 import {
+  capacityUtilizationColorExpression,
+  capacityUtilizationColors,
+  capacityUtilizationLegendItems,
   circleColorExpression,
   facilitySuitabilityColors,
   facilitySuitabilityLegendItems,
 } from './legend'
 
 /** Metrics that can drive map point coloring. */
-export type MapMetricId = 'facilitySuitability'
+export type MapMetricId = 'facilitySuitability' | 'capacityUtilization'
 
 export type MapMetricLegendItem = {
   id: string
@@ -31,6 +34,16 @@ export const mapMetrics: MapMetricDefinition[] = [
       id: rating,
       label,
       color: facilitySuitabilityColors[rating],
+    })),
+  },
+  {
+    id: 'capacityUtilization',
+    label: 'Capacity Utilization',
+    colorExpression: capacityUtilizationColorExpression,
+    legendItems: capacityUtilizationLegendItems.map(({ rating, label }) => ({
+      id: rating,
+      label,
+      color: capacityUtilizationColors[rating],
     })),
   },
 ]

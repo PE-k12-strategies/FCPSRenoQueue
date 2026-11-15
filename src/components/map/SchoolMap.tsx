@@ -14,8 +14,13 @@ import {
   type MapMetricId,
 } from '../../config/mapMetrics'
 import { boundsFromPoints } from '../../lib/geoBounds'
+import { filterGeoJsonByCapacityUtilization } from '../../lib/filterGeoJsonByCapacityUtilization'
 import { filterGeoJsonBySearch } from '../../lib/filterGeoJsonBySearch'
 import { filterGeoJsonBySuitability } from '../../lib/filterGeoJsonBySuitability'
+import {
+  capacityUtilizationProperty,
+  type CapacityUtilizationRating,
+} from '../../lib/capacityUtilization'
 import {
   facilitySuitabilityProperty,
   type FacilitySuitabilityRating,
@@ -46,6 +51,7 @@ type Props = {
   data: SchoolFeatureCollection | null
   searchQuery: string
   suitabilityFilter: FacilitySuitabilityRating | null
+  capacityFilter: CapacityUtilizationRating | null
   selectedSchool: SelectedSchool | null
   onSelectSchool: (school: SelectedSchool | null) => void
 }
@@ -73,6 +79,7 @@ export function SchoolMap({
   data,
   searchQuery,
   suitabilityFilter,
+  capacityFilter,
   selectedSchool,
   onSelectSchool,
 }: Props) {
@@ -90,6 +97,17 @@ export function SchoolMap({
     basemap === 'satellite' ? MAP_STYLE_SATELLITE : MAP_STYLE_LIGHT
   const activeMetric = getMapMetric(mapMetric)
 
+  // Keep map legend colors aligned with the active District Overview filter.
+  useEffect(() => {
+    if (suitabilityFilter) {
+      setMapMetric('facilitySuitability')
+      return
+    }
+    if (capacityFilter) {
+      setMapMetric('capacityUtilization')
+    }
+  }, [suitabilityFilter, capacityFilter])
+
   // Keep all sites when a school is selected so others can be dimmed (not removed).
   // Search still filters the map only while typing / before a selection.
   const displayData = useMemo(() => {
@@ -98,21 +116,25 @@ export function SchoolMap({
     return filterGeoJsonBySearch(data, searchQuery)
   }, [data, searchQuery, selectedSchool])
 
-  /** Matching schools for fitBounds when a suitability filter is active. */
-  const focusData = useMemo(
-    () =>
-      displayData
-        ? filterGeoJsonBySuitability(displayData, suitabilityFilter)
-        : null,
-    [displayData, suitabilityFilter],
-  )
+  /** Matching schools for fitBounds when a category filter is active. */
+  const focusData = useMemo(() => {
+    if (!displayData) return null
+    if (suitabilityFilter) {
+      return filterGeoJsonBySuitability(displayData, suitabilityFilter)
+    }
+    if (capacityFilter) {
+      return filterGeoJsonByCapacityUtilization(displayData, capacityFilter)
+    }
+    return displayData
+  }, [displayData, suitabilityFilter, capacityFilter])
 
   const selectedId = selectedSchool?.id ?? ''
+  const categoryFilterActive = Boolean(suitabilityFilter || capacityFilter)
 
   const circleOpacity = useMemo((): number | ExpressionSpecification => {
     // Dim non-matches like the donut filter: keep the selected school (and/or
-    // suitability matches) bright; fade everything else.
-    if (!suitabilityFilter && !selectedId) return 0.92
+    // category matches) bright; fade everything else.
+    if (!categoryFilterActive && !selectedId) return 0.92
 
     const isSelected: ExpressionSpecification = [
       '==',
@@ -120,28 +142,26 @@ export function SchoolMap({
       selectedId,
     ]
 
-    if (suitabilityFilter && selectedId) {
-      return [
-        'case',
-        isSelected,
-        0.95,
-        ['==', ['get', facilitySuitabilityProperty], suitabilityFilter],
-        0.92,
-        0.18,
-      ]
+    const matchesCategory: ExpressionSpecification | null = suitabilityFilter
+      ? ['==', ['get', facilitySuitabilityProperty], suitabilityFilter]
+      : capacityFilter
+        ? ['==', ['get', capacityUtilizationProperty], capacityFilter]
+        : null
+
+    if (matchesCategory && selectedId) {
+      return ['case', isSelected, 0.95, matchesCategory, 0.92, 0.18]
     }
 
     if (selectedId) {
       return ['case', isSelected, 0.95, 0.18]
     }
 
-    return [
-      'case',
-      ['==', ['get', facilitySuitabilityProperty], suitabilityFilter!],
-      0.92,
-      0.18,
-    ]
-  }, [suitabilityFilter, selectedId])
+    if (matchesCategory) {
+      return ['case', matchesCategory, 0.92, 0.18]
+    }
+
+    return 0.92
+  }, [suitabilityFilter, capacityFilter, categoryFilterActive, selectedId])
 
   const initialViewState = useMemo(() => {
     if (!displayData) {

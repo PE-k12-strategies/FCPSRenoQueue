@@ -1,4 +1,5 @@
 import { facilitySuitabilityTree } from './facilitySuitabilityTree'
+import { queueMetricRows } from './queueMetrics'
 
 /**
  * Metric sections shown in the school detail popup when a map point is selected.
@@ -9,6 +10,8 @@ export type SchoolMetricSection = {
   body: string
   /** Property keys to surface as rows when present on the school feature. */
   propertyKeys?: string[]
+  /** Labeled property rows (preferred over raw propertyKeys when set). */
+  displayFields?: { key: string; label: string }[]
   /**
    * Numeric score fields shown as Facility Suitability categories
    * (same breakpoints as FS_Score), not raw values.
@@ -17,6 +20,23 @@ export type SchoolMetricSection = {
   /** Static fallback rows when no property keys / values are available. */
   fallbackItems?: string[]
 }
+
+const capacityMetric = queueMetricRows.find((row) => row.id === 'capacity')
+
+/** Capacity fields from Adopted CIP FY2027–31 CSV. */
+export const capacityDisplayFields = [
+  { key: 'Design Capacity', label: 'Design Capacity' },
+  { key: 'Program Capacity', label: 'Program Capacity' },
+  { key: 'SY25-26 Enrollment', label: 'SY25-26 Enrollment' },
+  {
+    key: 'SY25-26 Program Capacity Utilization',
+    label: 'Program Capacity Utilization (SY25-26)',
+  },
+  {
+    key: 'SY25-26 Design Capacity Utilization',
+    label: 'Design Capacity Utilization (SY25-26)',
+  },
+] as const
 
 /** FS submetrics: Column I (DF), Column S (SS), Column L (PA). */
 export const facilitySuitabilitySubScores = [
@@ -31,6 +51,14 @@ export const schoolMetricSections: SchoolMetricSection[] = [
     title: facilitySuitabilityTree.label,
     body: facilitySuitabilityTree.description,
     scoredCategoryKeys: [...facilitySuitabilitySubScores],
+  },
+  {
+    id: 'capacity',
+    title: capacityMetric?.label ?? 'Capacity',
+    body:
+      capacityMetric?.description ??
+      'Design and program capacity relative to current enrollment.',
+    displayFields: [...capacityDisplayFields],
   },
   {
     id: 'data-1',

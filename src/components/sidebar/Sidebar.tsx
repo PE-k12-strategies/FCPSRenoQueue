@@ -8,7 +8,11 @@ import {
   type QueueSubMetricId,
   type QueueSubMetricWeights,
 } from '../../config/queueMetrics'
-import { summarizeFacilitySuitability } from '../../lib/districtOverview'
+import {
+  summarizeCapacityUtilization,
+  summarizeFacilitySuitability,
+} from '../../lib/districtOverview'
+import type { CapacityUtilizationRating } from '../../lib/capacityUtilization'
 import type { FacilitySuitabilityRating } from '../../lib/facilitySuitability'
 import {
   filterSchoolNameSuggestions,
@@ -33,6 +37,8 @@ type Props = {
   onSuitabilityFilterChange: (
     rating: FacilitySuitabilityRating | null,
   ) => void
+  capacityFilter: CapacityUtilizationRating | null
+  onCapacityFilterChange: (rating: CapacityUtilizationRating | null) => void
 }
 
 export function Sidebar({
@@ -43,6 +49,8 @@ export function Sidebar({
   schoolData,
   suitabilityFilter,
   onSuitabilityFilterChange,
+  capacityFilter,
+  onCapacityFilterChange,
 }: Props) {
   const [weights, setWeights] = useState<QueueMetricWeights>(
     defaultQueueMetricWeights,
@@ -64,6 +72,10 @@ export function Sidebar({
 
   const suitability = useMemo(
     () => summarizeFacilitySuitability(schoolData),
+    [schoolData],
+  )
+  const capacity = useMemo(
+    () => summarizeCapacityUtilization(schoolData),
     [schoolData],
   )
 
@@ -288,8 +300,11 @@ export function Sidebar({
 
           <DistrictOverview
             suitability={suitability}
-            selectedRating={suitabilityFilter}
-            onSelectRating={onSuitabilityFilterChange}
+            selectedSuitability={suitabilityFilter}
+            onSelectSuitability={onSuitabilityFilterChange}
+            capacity={capacity}
+            selectedCapacity={capacityFilter}
+            onSelectCapacity={onCapacityFilterChange}
           />
         </div>
 
