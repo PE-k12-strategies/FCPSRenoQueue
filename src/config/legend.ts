@@ -15,12 +15,13 @@ export type {
   FacilitySuitabilityRating,
 }
 
-/** Shared palette: priority labels and Good–Deficient bands use the same colors. */
+/** Shared palette for priority labels and Good–Deficient bands. */
 const scoreBandColors = {
-  high: '#65a30d',
-  midHigh: '#eab308',
-  mid: '#f97316',
-  low: '#e11d48',
+  lowest: '#15803d',
+  low: '#65a30d',
+  medium: '#eab308',
+  high: '#f97316',
+  highest: '#e11d48',
 } as const
 
 export type SuitabilityColorKey =
@@ -28,38 +29,42 @@ export type SuitabilityColorKey =
   | FacilitySuitabilityBand
 
 export const facilitySuitabilityColors: Record<SuitabilityColorKey, string> = {
-  'Low Priority': scoreBandColors.high,
-  'Medium High Priority': scoreBandColors.midHigh,
-  'High Priority': scoreBandColors.mid,
-  'Critical Priority': scoreBandColors.low,
-  Good: scoreBandColors.high,
-  Fair: scoreBandColors.midHigh,
-  Poor: scoreBandColors.mid,
-  Deficient: scoreBandColors.low,
+  'Lowest Priority': scoreBandColors.lowest,
+  'Low Priority': scoreBandColors.low,
+  'Medium Priority': scoreBandColors.medium,
+  'High Priority': scoreBandColors.high,
+  'Highest Priority': scoreBandColors.highest,
+  Good: scoreBandColors.low,
+  Fair: scoreBandColors.medium,
+  Poor: scoreBandColors.high,
+  Deficient: scoreBandColors.highest,
 }
 
 export const facilitySuitabilityLegendItems: {
   rating: FacilitySuitabilityRating
   label: string
 }[] = [
+  { rating: 'Lowest Priority', label: 'Lowest Priority' },
   { rating: 'Low Priority', label: 'Low Priority' },
-  { rating: 'Medium High Priority', label: 'Medium High Priority' },
+  { rating: 'Medium Priority', label: 'Medium Priority' },
   { rating: 'High Priority', label: 'High Priority' },
-  { rating: 'Critical Priority', label: 'Critical Priority' },
+  { rating: 'Highest Priority', label: 'Highest Priority' },
 ]
 
 /** Mapbox expression for circle fill color from Facility Suitability. */
 export const circleColorExpression: ExpressionSpecification = [
   'match',
   ['get', facilitySuitabilityProperty],
+  'Lowest Priority',
+  facilitySuitabilityColors['Lowest Priority'],
   'Low Priority',
   facilitySuitabilityColors['Low Priority'],
-  'Medium High Priority',
-  facilitySuitabilityColors['Medium High Priority'],
+  'Medium Priority',
+  facilitySuitabilityColors['Medium Priority'],
   'High Priority',
   facilitySuitabilityColors['High Priority'],
-  'Critical Priority',
-  facilitySuitabilityColors['Critical Priority'],
+  'Highest Priority',
+  facilitySuitabilityColors['Highest Priority'],
   '#94a3b8',
 ]
 

@@ -1,25 +1,10 @@
 /**
- * Central place to wire your real files. Every CSV must share the same id column.
- * GeoJSON features should expose that id on `properties` (see `geoJsonIdField`).
+ * Join keys shared by GeoJSON feature properties and Supabase-mapped rows.
+ * Attribute tables and GeoJSON files are loaded from the Supabase project.
  */
 export const dataConfig = {
-  /** Property on each GeoJSON feature used to match CSV rows (1:1). */
+  /** Property on each GeoJSON feature used to match table rows (1:1). */
   geoJsonIdField: 'FCPS_School ID' as const,
-  /** Column name that appears in every CSV file. */
+  /** Column / property name used after Supabase row mapping. */
   csvIdField: 'FCPS_School ID' as const,
-
-  geojsonUrl: '/data/FCPS_Sites.geojson',
-
-  /** Load any number of CSVs; they are merged per id (later files overwrite duplicate column names). */
-  csvSources: [
-    {
-      url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRoJ6plKFDrlLPEzBFzY32k2YokTNMhzq1DU6hVJHx5VC37LRQlHtyx3xX4YKwsHTsBt0wz25Srnrqp/pub?gid=1730185827&single=true&output=csv',
-      key: 'fsData',
-    },
-    {
-      /** Adopted CIP FY2027–31 capacity / enrollment (local copy under public/data). */
-      url: '/data/FCPS_Capacity_CIP_FY2027-31.csv',
-      key: 'capacityData',
-    },
-  ] as const,
 } as const

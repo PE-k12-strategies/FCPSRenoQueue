@@ -5,14 +5,16 @@ import {
 } from './capacityUtilization'
 import {
   facilitySuitabilityProperty,
+  isFacilitySuitabilityRating,
   type FacilitySuitabilityRating,
 } from './facilitySuitability'
 
 export const facilitySuitabilityRatings: FacilitySuitabilityRating[] = [
+  'Lowest Priority',
   'Low Priority',
-  'Medium High Priority',
+  'Medium Priority',
   'High Priority',
-  'Critical Priority',
+  'Highest Priority',
 ]
 
 export const capacityUtilizationRatings: CapacityUtilizationRating[] = [
@@ -77,17 +79,6 @@ function summarizeCategory<T extends string>(
     totalSchools: features.length,
     rows,
   }
-}
-
-function isFacilitySuitabilityRating(
-  value: unknown,
-): value is FacilitySuitabilityRating {
-  return (
-    value === 'Low Priority' ||
-    value === 'Medium High Priority' ||
-    value === 'High Priority' ||
-    value === 'Critical Priority'
-  )
 }
 
 function isCapacityUtilizationRating(

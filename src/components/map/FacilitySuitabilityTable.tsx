@@ -7,6 +7,7 @@ import {
   type SuitabilityMetricNode,
 } from '../../config/facilitySuitabilityTree'
 import {
+  parseFacilitySuitabilityRating,
   parseFsScore,
   scoreToFacilitySuitability,
   scoreToFacilitySuitabilityBand,
@@ -26,6 +27,8 @@ function overallCategoryFor(
   props: Record<string, unknown>,
   field: string,
 ): SuitabilityColorKey | null {
+  const labeled = parseFacilitySuitabilityRating(props[field])
+  if (labeled) return labeled
   const score = parseFsScore(props[field])
   if (score == null) return null
   return scoreToFacilitySuitability(score)

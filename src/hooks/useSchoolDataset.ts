@@ -1,42 +1,16 @@
-import { useEffect, useMemo, useState } from 'react'
-import { dataConfig } from '../config/dataConfig'
-import { assignCapacityUtilization } from '../lib/capacityUtilization'
-import { assignFacilitySuitability } from '../lib/facilitySuitability'
-import { fetchText } from '../lib/fetchText'
-import { joinGeoJsonWithCsv } from '../lib/joinGeoJsonWithCsv'
-import { parseCsv } from '../lib/parseCsv'
-import type { CsvRow, JoinedDataset, SchoolFeatureCollection } from '../types/data'
+import { useEffect, useState } from 'react'
+import { loadSchoolDatasetFromSupabase } from '../lib/loadSchoolDatasetFromSupabase'
+import { getSupabaseConfigError } from '../lib/supabaseClient'
+import type { JoinedDataset } from '../types/data'
 
 type LoadState =
   | { status: 'idle' | 'loading' }
   | { status: 'ready'; data: JoinedDataset }
   | { status: 'error'; message: string }
 
-function parseGeoJson(raw: string): SchoolFeatureCollection {
-  const data = JSON.parse(raw) as unknown
-  if (
-    !data ||
-    typeof data !== 'object' ||
-    (data as SchoolFeatureCollection).type !== 'FeatureCollection' ||
-    !Array.isArray((data as SchoolFeatureCollection).features)
-  ) {
-    throw new Error('GeoJSON must be a FeatureCollection')
-  }
-  return data as SchoolFeatureCollection
-}
-
-/** Loads GeoJSON + all configured CSVs, merges rows by id, returns enriched GeoJSON for the map. */
+/** Loads school sites + attribute tables from Supabase and returns enriched GeoJSON. */
 export function useSchoolDataset(): LoadState {
   const [state, setState] = useState<LoadState>({ status: 'idle' })
-
-  const deps = useMemo(
-    () =>
-      [
-        dataConfig.geojsonUrl,
-        ...dataConfig.csvSources.map((s) => s.url),
-      ].join('|'),
-    [],
-  )
 
   useEffect(() => {
     let cancelled = false
@@ -44,28 +18,10 @@ export function useSchoolDataset(): LoadState {
 
     async function run() {
       try {
-        const geoRaw = await fetchText(dataConfig.geojsonUrl)
-        const collection = parseGeoJson(geoRaw)
+        const configError = getSupabaseConfigError()
+        if (configError) throw new Error(configError)
 
-        const mergedRows: CsvRow[] = []
-        for (const src of dataConfig.csvSources) {
-          const csvRaw = await fetchText(src.url)
-          mergedRows.push(...parseCsv(csvRaw))
-        }
-
-        const joined = joinGeoJsonWithCsv(
-          collection,
-          mergedRows,
-          dataConfig.geoJsonIdField,
-          dataConfig.csvIdField,
-        )
-        const enriched = {
-          ...joined,
-          geojson: assignCapacityUtilization(
-            assignFacilitySuitability(joined.geojson),
-          ),
-        }
-
+        const enriched = await loadSchoolDatasetFromSupabase()
         if (!cancelled) {
           setState({ status: 'ready', data: enriched })
         }
@@ -83,7 +39,7 @@ export function useSchoolDataset(): LoadState {
     return () => {
       cancelled = true
     }
-  }, [deps])
+  }, [])
 
   return state
 }

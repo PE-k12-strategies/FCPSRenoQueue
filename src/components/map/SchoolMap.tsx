@@ -25,6 +25,7 @@ import {
   facilitySuitabilityProperty,
   type FacilitySuitabilityRating,
 } from '../../lib/facilitySuitability'
+import { schoolRegionsGeoJsonUrl } from '../../lib/loadSchoolDatasetFromSupabase'
 import type { SchoolFeatureCollection } from '../../types/data'
 import { MapLegend, type BasemapMode, type ViewMode } from './MapLegend'
 import {
@@ -40,7 +41,7 @@ const MAP_STYLE_SATELLITE = 'mapbox://styles/mapbox/satellite-streets-v12'
 const SCHOOL_LAYER_ID = 'school-sites-circle'
 const REGION_FILL_LAYER_ID = 'school-regions-fill'
 const REGION_LINE_LAYER_ID = 'school-regions-line'
-const SCHOOL_REGIONS_URL = '/data/FCPS_School_Regions.geojson'
+const SCHOOL_REGIONS_URL = schoolRegionsGeoJsonUrl()
 
 /** Same stack as `:root --font` in `index.html` / `index.css` (Mapbox glyph override). */
 const MAP_LABEL_FONT_FAMILY =
